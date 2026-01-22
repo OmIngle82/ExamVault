@@ -257,7 +257,7 @@ export default function ResultsClient({ id }: ResultsClientProps) {
                                 <Tooltip
                                     cursor={{ fill: '#F3F4F6' }}
                                     contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
-                                    formatter={(value: number) => [`${value}% Correct`, 'Success Rate']}
+                                    formatter={(value: any) => [`${value}% Correct`, 'Success Rate']}
                                     labelFormatter={(label) => `Question ${label}`}
                                 />
                                 <Bar dataKey="percentage" fill="#10B981" radius={[0, 4, 4, 0]} barSize={20} />
