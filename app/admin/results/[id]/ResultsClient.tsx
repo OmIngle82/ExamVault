@@ -257,6 +257,7 @@ export default function ResultsClient({ id }: ResultsClientProps) {
                                 <Tooltip
                                     cursor={{ fill: '#F3F4F6' }}
                                     contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                                    // @ts-ignore - Recharts type definition conflict fix
                                     formatter={(value: any) => [`${value}% Correct`, 'Success Rate']}
                                     labelFormatter={(label) => `Question ${label}`}
                                 />
