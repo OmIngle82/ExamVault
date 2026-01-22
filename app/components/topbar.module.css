@@ -1,0 +1,105 @@
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 0;
+    margin-bottom: 3rem;
+    /* TopBar is inside the right content area, so no fixed width needed */
+}
+
+.searchContainer {
+    position: relative;
+    width: 450px;
+    background: #EFF3F9;
+    /* Light gray pill */
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    padding: 0.5rem;
+}
+
+.searchIcon {
+    margin-left: 1rem;
+    color: var(--text-muted);
+}
+
+.searchInput {
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 0.5rem 1rem;
+    font-size: 0.95rem;
+    color: var(--text-dark);
+}
+
+.searchInput::placeholder {
+    color: #B0B7C3;
+}
+
+.searchInput:focus {
+    outline: none;
+}
+
+.goBtn {
+    background: var(--primary-btn);
+    color: white;
+    font-weight: 700;
+    padding: 0.6rem 1.5rem;
+    border-radius: 40px;
+    transition: transform 0.2s;
+}
+
+.goBtn:hover {
+    transform: scale(1.05);
+}
+
+/* Right Actions */
+.actions {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.avatarRow {
+    display: flex;
+    align-items: center;
+}
+
+.headerAvatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid white;
+    margin-left: -10px;
+    /* Overlap */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+.headerAvatar:first-child {
+    margin-left: 0;
+}
+
+.iconBtn {
+    position: relative;
+    color: var(--text-dark);
+    transition: color 0.2s;
+}
+
+.iconBtn:hover {
+    color: var(--accent-purple);
+}
+
+.badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 8px;
+    height: 8px;
+    background: var(--accent-purple);
+    /* Or red */
+    border-radius: 50%;
+    border: 2px solid var(--bg-cream);
+}

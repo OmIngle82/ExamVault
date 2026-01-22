@@ -1,0 +1,139 @@
+/* Hero Section */
+.hero {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+}
+
+.heroAvatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 4px solid white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.heroTitle {
+    font-size: 2rem;
+    margin-bottom: 0.25rem;
+}
+
+.heroSubtitle {
+    color: var(--text-muted);
+}
+
+/* Bento Grid - UPDATED for 2-Column Layout */
+.bentoGrid {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    /* Content takes majority, Sidebar fixed width */
+    gap: 2.5rem;
+    align-items: start;
+}
+
+/* Column Styles */
+.colContent {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.colSidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.sectionHeader {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.sectionHeader h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.badge {
+    background: #E0E7FF;
+    color: #4338CA;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.testList {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.empty {
+    padding: 2rem;
+    background: white;
+    border-radius: 20px;
+    text-align: center;
+    color: var(--text-muted);
+}
+
+/* Square Stats */
+.statsRow {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.statSquare {
+    background: white;
+    border-radius: 24px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    min-height: 140px;
+}
+
+.hugeNum {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--text-dark);
+    margin-bottom: 0.25rem;
+}
+
+.statLabel {
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+/* Generic Grid for History/Explore */
+.cardGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .bentoGrid {
+        grid-template-columns: 1fr;
+        /* Stack on smaller screens */
+    }
+
+    .colSidebar {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .colSidebar>* {
+        flex: 1;
+        min-width: 300px;
+    }
+}

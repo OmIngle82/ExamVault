@@ -1,0 +1,309 @@
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 6rem 2rem;
+  color: var(--text-main);
+  position: relative;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.header h1 {
+  font-size: 3.5rem;
+  color: var(--text-main);
+  text-shadow: 2px 2px 0px #fff;
+  background: var(--color-yellow);
+  display: inline-block;
+  padding: 0.5rem 2rem;
+  border: 4px solid var(--text-main);
+  box-shadow: 8px 8px 0px var(--text-main);
+  border-radius: 50px;
+  transform: rotate(-2deg);
+}
+
+.section {
+  margin-bottom: 6rem;
+  animation: fadeIn 0.8s ease-out;
+}
+
+/* New Container for grounding the visual */
+.leaderboardCard {
+  background: #fff;
+  border: 4px solid var(--text-main);
+  border-radius: 40px;
+  box-shadow: 12px 12px 0px rgba(0,0,0,0.1);
+  padding: 4rem 2rem;
+  position: relative;
+  background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.leaderboardCard::before {
+  content: '';
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  right: 15px;
+  bottom: 15px;
+  border: 2px dashed #ddd;
+  border-radius: 30px;
+  pointer-events: none;
+}
+
+.testTitle {
+  font-size: 2rem;
+  margin-bottom: 3rem;
+  color: var(--text-main);
+  text-align: center;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-decoration: underline;
+  text-decoration-color: var(--color-pink);
+  text-decoration-thickness: 4px;
+  position: relative;
+  z-index: 2;
+}
+
+/* Podium Styles */
+.podium {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 1.5rem;
+  height: 400px;
+  margin-bottom: 3rem;
+  position: relative;
+  z-index: 2;
+}
+
+.podiumPlace {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 140px;
+  position: relative;
+}
+
+.scorePillar {
+  width: 100%;
+  border: 3px solid var(--text-main);
+  border-bottom: none;
+  border-radius: 12px 12px 0 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  padding-bottom: 1rem;
+  font-weight: 800;
+  font-size: 2.2rem;
+  color: #fff;
+  text-shadow: 2px 2px 0px var(--text-main);
+  box-shadow: 6px 0px 0px rgba(0,0,0,0.1);
+  position: relative;
+}
+
+/* 1st Place */
+.first { order: 2; height: 100%; transform: scale(1.1); z-index: 2; }
+.first .scorePillar { 
+    height: 250px; 
+    background: var(--color-yellow); 
+}
+.first .playerName { font-size: 1.2rem; color: var(--color-pink); background: #fff; }
+.crown { font-size: 3.5rem; position: absolute; top: -60px; animation: bounce 2s infinite; }
+
+/* 2nd Place */
+.second { order: 1; height: 80%; }
+.second .scorePillar { 
+    height: 180px; 
+    background: var(--color-green); 
+}
+
+/* 3rd Place */
+.third { order: 3; height: 70%; }
+.third .scorePillar { 
+    height: 140px; 
+    background: var(--color-blue); 
+}
+
+.avatar {
+  width: 70px;
+  height: 70px;
+  background: #fff;
+  border: 4px solid var(--text-main);
+  border-radius: 50%;
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2rem;
+  box-shadow: 3px 3px 0px var(--text-main);
+  position: relative;
+  z-index: 5;
+}
+
+.playerName {
+  margin-bottom: 0.5rem;
+  font-weight: 800;
+  text-align: center;
+  background: #fff;
+  padding: 0.4rem 0.8rem;
+  border: 2px solid var(--text-main);
+  border-radius: 12px;
+  box-shadow: 3px 3px 0px var(--text-main);
+  white-space: nowrap;
+  position: relative;
+  z-index: 5;
+  cursor: help;
+}
+
+.viewAllBtn {
+    display: block;
+    margin: 0 auto 2rem;
+    padding: 0.8rem 2rem;
+    border-radius: 20px;
+    border: 2px solid var(--text-main);
+    background: #fff;
+    cursor: pointer;
+    font-weight: bold;
+    color: var(--text-main);
+    box-shadow: 3px 3px 0px var(--text-main);
+    transition: all 0.2s;
+    position: relative;
+    z-index: 2;
+}
+
+.viewAllBtn:hover {
+    transform: translateY(-2px);
+    box-shadow: 5px 5px 0px var(--text-main);
+}
+
+.fullListContainer {
+    animation: fadeIn 0.5s ease-out;
+    background: #fff;
+    border: 2px solid var(--text-main);
+    border-radius: 16px;
+    padding: 1rem;
+    position: relative;
+    z-index: 2;
+}
+
+.fullTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.fullTable th {
+    text-align: left;
+    padding: 1rem;
+    border-bottom: 2px solid #eee;
+    color: #888;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+}
+
+.fullTable td {
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
+    font-size: 0.95rem;
+}
+
+.fullTable tr:last-child td {
+    border-bottom: none;
+}
+
+.fullTable tr:hover {
+    background: #f9f9f9;
+}
+
+.rank {
+  font-weight: 800;
+  color: #ddd;
+  font-size: 1.8rem;
+  margin-right: 1.5rem;
+}
+
+.homeBtn {
+  display: block;
+  width: fit-content;
+  margin: 5rem auto 0;
+  background: var(--color-pink);
+  color: #fff;
+  padding: 1.2rem 3rem;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 1.2rem;
+  border: 3px solid var(--text-main);
+  box-shadow: 5px 5px 0px var(--text-main);
+  transition: all 0.2s;
+}
+
+.homeBtn:hover {
+  transform: translate(-4px, -4px);
+  box-shadow: 9px 9px 0px var(--text-main);
+  background: #ff5c82;
+}
+
+/* Tooltip Logic */
+.tooltip {
+  visibility: hidden;
+  width: 240px;
+  background-color: var(--text-main);
+  color: #fff;
+  text-align: center;
+  border-radius: 12px;
+  padding: 1rem;
+  position: absolute;
+  z-index: 200;
+  bottom: 120%;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  font-size: 0.9rem;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+  pointer-events: none;
+}
+
+.tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: var(--text-main) transparent transparent transparent;
+}
+
+.tooltipRow {
+  display: flex;
+  justify-content: space-between;
+  margin: 0.3rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+  padding-bottom: 0.2rem;
+}
+
+.tooltipRow:last-child {
+  border-bottom: none;
+}
+
+.playerName:hover .tooltip,
+.listItem:hover .tooltip {
+  visibility: visible;
+  opacity: 1;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}

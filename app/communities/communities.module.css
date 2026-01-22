@@ -1,0 +1,165 @@
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 2rem;
+}
+
+.header h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    color: #1F2937;
+}
+
+.header p {
+    color: #6B7280;
+}
+
+.createBtn {
+    background: #2563EB;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.createBtn:hover {
+    background: #1D4ED8;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border: 1px solid #E5E7EB;
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.cardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.cardHeader h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1F2937;
+}
+
+.badge {
+    background: #EFF6FF;
+    color: #2563EB;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-family: monospace;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.badge:hover {
+    background: #DBEAFE;
+}
+
+.desc {
+    color: #6B7280;
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+}
+
+.stats {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #9CA3AF;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+/* Join Section (Student) */
+.joinSection {
+    background: white;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    margin-bottom: 3rem;
+}
+
+.joinSection h3 {
+    margin: 0 0 1rem 0;
+    font-size: 1.25rem;
+}
+
+.joinForm {
+    display: flex;
+    gap: 1rem;
+}
+
+.joinForm input {
+    flex: 1;
+    padding: 0.875rem 1rem;
+    border: 2px solid #E5E7EB;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.joinForm button {
+    background: #10B981;
+    color: white;
+    border: none;
+    padding: 0 2rem;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.subHeader {
+    font-size: 1.2rem;
+    color: #4B5563;
+    margin-bottom: 1rem;
+}
+
+.adminTag {
+    font-size: 0.75rem;
+    background: #F3F4F6;
+    color: #6B7280;
+    padding: 2px 6px;
+    border-radius: 4px;
+}

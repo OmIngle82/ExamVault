@@ -1,0 +1,207 @@
+.container {
+    width: 210mm;
+    min-height: 297mm;
+    background: white;
+    padding: 40px;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+    color: #1e293b;
+    position: relative;
+    border: 1px solid #e2e8f0; /* For preview visibility */
+}
+
+/* Hide from screen when not previewing/printing if used appropriately */
+/* But for html2canvas we usually render it off-screen or in a hidden div */
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 3px solid #0f172a;
+    padding-bottom: 20px;
+    margin-bottom: 40px;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-weight: 800;
+    font-size: 1.5rem;
+    color: #0f172a;
+}
+
+.logo {
+    width: 40px;
+    height: 40px;
+    background: #0f172a;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-size: 1.2rem;
+}
+
+.date {
+    color: #64748b;
+    font-size: 0.9rem;
+}
+
+.title {
+    text-align: center;
+    font-size: 2.5rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 60px;
+    color: #334155;
+}
+
+.studentInfo {
+    margin-bottom: 60px;
+    background: #f8fafc;
+    padding: 30px;
+    border-radius: 12px;
+}
+
+.row {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px dashed #cbd5e1;
+    padding: 15px 0;
+    font-size: 1.2rem;
+}
+
+.row:last-child {
+    border-bottom: none;
+}
+
+.label {
+    color: #64748b;
+    font-weight: 600;
+}
+
+.value {
+    font-weight: 800;
+}
+
+.scoreSection {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 60px;
+    margin-bottom: 60px;
+}
+
+.gradeCircle {
+    width: 150px;
+    height: 150px;
+    border: 10px solid;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.gradeText {
+    font-size: 4rem;
+    font-weight: 900;
+    line-height: 1;
+}
+
+.percentage {
+    font-size: 1.2rem;
+    color: #64748b;
+    font-weight: 600;
+}
+
+.scoreDetails {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.detailItem {
+    display: flex;
+    flex-direction: column;
+}
+
+.detailItem span {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    color: #94a3b8;
+    letter-spacing: 1px;
+    font-weight: 700;
+}
+
+.detailItem strong {
+    font-size: 2rem;
+    font-weight: 800;
+}
+
+.achievements {
+    margin-bottom: 60px;
+    text-align: center;
+}
+
+.achievements h3 {
+    color: #64748b;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+}
+
+.badges {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.badge {
+    background: #fff;
+    border: 2px solid #e2e8f0;
+    padding: 10px 20px;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    color: #334155;
+}
+
+.badgeIcon {
+    font-size: 1.2rem;
+}
+
+.xpBadge {
+    background: #eff6ff;
+    color: #2563eb;
+    border: 2px solid #bfdbfe;
+    padding: 10px 20px;
+    border-radius: 50px;
+    font-weight: 800;
+}
+
+.footer {
+    position: absolute;
+    bottom: 40px;
+    left: 40px;
+    right: 40px;
+    text-align: center;
+    color: #94a3b8;
+    font-size: 0.8rem;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 20px;
+}
+
+.signature {
+    margin-top: 20px;
+    font-family: 'Cursive', serif; /* Fallback */
+    font-size: 1.5rem;
+    color: #0f172a;
+    opacity: 0.6;
+}

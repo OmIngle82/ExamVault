@@ -1,0 +1,118 @@
+.card {
+    background: white;
+    /* Clean white card */
+    /* No shadow here? logic: The image has some cards with distinct greenish backgrounds ("Master Figma" is light green). 
+     Default to white or light blue. */
+    background: #EAFBF5;
+    /* Light Green Tint from "Master Figma" card */
+    border-radius: 20px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+    /* Gap between icon and text */
+    position: relative;
+    transition: transform 0.2s;
+}
+
+.card:nth-child(even) {
+    background: #F0F6FF;
+    /* Alternate blue tint */
+}
+
+.card:hover {
+    transform: translateY(-4px);
+}
+
+.iconBox {
+    width: 60px;
+    /* Larger icon box */
+    height: 60px;
+    border-radius: 12px;
+    /* background set inline */
+    padding: 10px;
+}
+
+.iconImg {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.hours {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.title {
+    font-size: 1.2rem;
+    font-weight: 800;
+    margin-bottom: 0.25rem;
+    line-height: 1.2;
+}
+
+.desc {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.enrollLink {
+    color: #10B981;
+    /* Green link */
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-decoration: none;
+}
+
+.enrollLink:hover {
+    text-decoration: underline;
+}
+
+.completedBadge {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #059669;
+    /* Green */
+    font-weight: 700;
+    font-size: 0.9rem;
+    background: #D1FAE5;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+}
+
+.menuBtn {
+    color: var(--text-muted);
+}
+
+.lockedBtn {
+    background: #E5E7EB;
+    color: #6B7280;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: not-allowed;
+    text-decoration: none;
+    border: 1px solid #D1D5DB;
+}

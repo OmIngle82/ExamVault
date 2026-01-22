@@ -1,0 +1,106 @@
+.container {
+    width: 280px;
+    padding: 2rem 0 2rem 2rem;
+    /* Add left padding so card floats */
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    z-index: 50;
+}
+
+.brand {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--text-dark);
+    padding-left: 1rem;
+}
+
+.card {
+    background: white;
+    border-radius: var(--radius-card);
+    padding: 2rem 1.5rem;
+    box-shadow: var(--card-shadow);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex: 1;
+}
+
+.link {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    border-radius: var(--radius-btn);
+    transition: all 0.2s;
+}
+
+.link:hover {
+    color: var(--text-dark);
+    background: #F9FAFB;
+}
+
+.active {
+    color: var(--text-dark);
+    /* The image shows just text active, but we can add a subtle marker */
+    font-weight: 800;
+}
+
+/* Bottom Settings Card */
+.bottomNav {
+    margin-top: auto;
+    border-top: 1px solid #F3F4F6;
+    padding-top: 1rem;
+}
+
+.settingsCard {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: #F9FAFB;
+    border-radius: 16px;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.settingsCard:hover {
+    background: #F3F4F6;
+    transform: translateY(-2px);
+}
+
+.settingsIcon {
+    width: 40px;
+    height: 40px;
+    background: var(--text-dark);
+    color: white;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.settingsTitle {
+    display: block;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--text-dark);
+}
+
+.settingsDesc {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}

@@ -1,0 +1,39 @@
+.loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.dot {
+  width: 1.2rem;
+  height: 1.2rem;
+  border-radius: 50%;
+  animation: bounce 0.6s infinite alternate;
+  border: 2px solid var(--text-main);
+  box-shadow: 2px 2px 0px var(--text-main);
+}
+
+.dot:nth-child(1) {
+  background-color: var(--color-pink);
+  animation-delay: 0s;
+}
+
+.dot:nth-child(2) {
+  background-color: var(--color-yellow);
+  animation-delay: 0.2s;
+}
+
+.dot:nth-child(3) {
+  background-color: var(--color-blue);
+  animation-delay: 0.4s;
+}
+
+@keyframes bounce {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-1rem);
+  }
+}
