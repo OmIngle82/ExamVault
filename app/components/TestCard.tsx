@@ -81,13 +81,13 @@ export default function TestCard({ test, role, isCompleted, onDelete }: TestCard
                 <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
                     {isFaculty ? (
                         <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                            <Link href={`/admin/results/${test.id}`} className={styles.enrollLink}>
+                            <Link href={`/admin/results/${test.id}`} className={styles.resultsBtn}>
                                 Results
                             </Link>
-                            <Link href={`/admin/test/${test.id}/host`} className={styles.enrollLink} style={{ background: '#FECACA', color: '#991B1B' }}>
+                            <Link href={`/admin/test/${test.id}/host`} className={styles.hostBtn}>
                                 <Play size={14} /> Host Live
                             </Link>
-                            <Link href={`/admin/test/${test.id}/analytics`} className={styles.enrollLink} style={{ background: '#DDD6FE', color: '#5B21B6' }}>
+                            <Link href={`/admin/test/${test.id}/analytics`} className={styles.analyticsBtn}>
                                 📊 Analytics
                             </Link>
                         </div>

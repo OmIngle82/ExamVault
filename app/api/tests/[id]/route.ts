@@ -24,7 +24,10 @@ export async function GET(
     isActive = false;
   }
 
-  return NextResponse.json({ ...test, isActive });
+  // Ensure questions are parsed
+  const questions = typeof test.questions === 'string' ? JSON.parse(test.questions) : test.questions;
+
+  return NextResponse.json({ ...test, questions, isActive });
 }
 
 export async function DELETE(

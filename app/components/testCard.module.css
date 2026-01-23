@@ -113,6 +113,10 @@
     align-items: center;
     gap: 0.5rem;
     cursor: not-allowed;
+    text-decoration: none;
+    border: 1px solid #D1D5DB;
+}
+
 .hostBtn {
     background: #FECACA;
     color: #991B1B;
