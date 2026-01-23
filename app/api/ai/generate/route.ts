@@ -4,20 +4,20 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
 export async function POST(req: NextRequest) {
-    try {
-        const { topic, text, count = 5 } = await req.json();
+  try {
+    const { topic, text, count = 5 } = await req.json();
 
-        if (!process.env.GEMINI_API_KEY) {
-            return NextResponse.json({ error: 'API Key missing' }, { status: 500 });
-        }
+    if (!process.env.GEMINI_API_KEY) {
+      return NextResponse.json({ error: 'API Key missing' }, { status: 500 });
+    }
 
-        if (!topic && !text) {
-            return NextResponse.json({ error: 'Topic or Text is required' }, { status: 400 });
-        }
+    if (!topic && !text) {
+      return NextResponse.json({ error: 'Topic or Text is required' }, { status: 400 });
+    }
 
-        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
 
-        const prompt = `
+    const prompt = `
       You are an expert exam creator.
       Generate ${count} multiple-choice questions (MCQ) based on the following content:
       
@@ -37,19 +37,19 @@ export async function POST(req: NextRequest) {
       Ensure "correctAnswer" exactly matches one of the strings in "options".
     `;
 
-        const result = await model.generateContent(prompt);
-        const response = await result.response;
-        let textData = response.text();
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    let textData = response.text();
 
-        // Cleanup markdown if present
-        textData = textData.replace(/```json/g, '').replace(/```/g, '').trim();
+    // Cleanup markdown if present
+    textData = textData.replace(/```json/g, '').replace(/```/g, '').trim();
 
-        const questions = JSON.parse(textData);
+    const questions = JSON.parse(textData);
 
-        return NextResponse.json({ questions });
+    return NextResponse.json({ questions });
 
-    } catch (error: any) {
-        console.error('AI Generation Error:', error);
-        return NextResponse.json({ error: error.message || 'Failed to generate' }, { status: 500 });
-    }
+  } catch (error: any) {
+    console.error('AI Generation Error:', error);
+    return NextResponse.json({ error: error.message || 'Failed to generate' }, { status: 500 });
+  }
 }

@@ -8,7 +8,8 @@ export const db =
   globalForDb.db ||
   new Pool({
     connectionString: process.env.POSTGRES_URL,
-    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : undefined,
+    // Neon typically uses the connection string parameters, but explicit ssl: true helps in some obscure node configs
+    // We defer to the connection string params mostly.
   });
 
 if (process.env.NODE_ENV !== 'production') globalForDb.db = db;
