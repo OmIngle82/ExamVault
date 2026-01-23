@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Topic or Text is required' }, { status: 400 });
     }
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
     const prompt = `
       You are an expert exam creator.
@@ -50,6 +50,9 @@ export async function POST(req: NextRequest) {
 
   } catch (error: any) {
     console.error('AI Generation Error:', error);
-    return NextResponse.json({ error: error.message || 'Failed to generate' }, { status: 500 });
+    // Handle status code from Google API error
+    const status = (error.status === 429 || (error.message && error.message.includes('429'))) ? 429 : 500;
+    const msg = status === 429 ? 'AI Usage Limit Exceeded (Please wait 1 min)' : (error.message || 'Failed to generate');
+    return NextResponse.json({ error: msg }, { status });
   }
 }
