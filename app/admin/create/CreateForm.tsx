@@ -21,7 +21,13 @@ export default function CreateTestPage() {
     duration: 30,
     startTime: '',
     endTime: '',
-    communityId: '' as string | number
+    communityId: '' as string | number,
+    proctoringSettings: {
+      enable_webcam: false,
+      enable_audio: false,
+      enable_fullscreen: true,
+      tab_lock: true
+    }
   });
 
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -169,6 +175,61 @@ export default function CreateTestPage() {
               />
             </label>
           </div>
+          </div>
+        </div>
+
+        <div className={styles.section}>
+          <h2>Test Security 🛡️</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', background: '#F9FAFB', padding: '1rem', borderRadius: '8px', border: '1px solid #E5E7EB' }}>
+              <input
+                type="checkbox"
+                checked={formData.proctoringSettings.enable_fullscreen}
+                onChange={e => setFormData({ ...formData, proctoringSettings: { ...formData.proctoringSettings, enable_fullscreen: e.target.checked } })}
+                style={{ width: '20px', height: '20px', accentColor: '#10B981' }}
+              />
+              <div>
+                <span style={{ fontWeight: 'bold', display: 'block' }}>Force Full Screen</span>
+                <span style={{ fontSize: '0.8rem', color: '#6B7280' }}>Kick if user exits</span>
+              </div>
+            </label>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', background: '#F9FAFB', padding: '1rem', borderRadius: '8px', border: '1px solid #E5E7EB' }}>
+              <input
+                type="checkbox"
+                checked={formData.proctoringSettings.tab_lock}
+                onChange={e => setFormData({ ...formData, proctoringSettings: { ...formData.proctoringSettings, tab_lock: e.target.checked } })}
+                style={{ width: '20px', height: '20px', accentColor: '#10B981' }}
+              />
+              <div>
+                <span style={{ fontWeight: 'bold', display: 'block' }}>Tab Focus Lock</span>
+                <span style={{ fontSize: '0.8rem', color: '#6B7280' }}>Track tab switches</span>
+              </div>
+            </label>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', background: '#F9FAFB', padding: '1rem', borderRadius: '8px', border: '1px solid #E5E7EB' }}>
+              <input
+                type="checkbox"
+                checked={formData.proctoringSettings.enable_webcam}
+                onChange={e => setFormData({ ...formData, proctoringSettings: { ...formData.proctoringSettings, enable_webcam: e.target.checked } })}
+                style={{ width: '20px', height: '20px', accentColor: '#DC2626' }}
+              />
+              <div>
+                <span style={{ fontWeight: 'bold', display: 'block' }}>Webcam Mon.</span>
+                <span style={{ fontSize: '0.8rem', color: '#6B7280' }}>Snapshots every 30s</span>
+              </div>
+            </label>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', background: '#F9FAFB', padding: '1rem', borderRadius: '8px', border: '1px solid #E5E7EB' }}>
+              <input
+                type="checkbox"
+                checked={formData.proctoringSettings.enable_audio}
+                onChange={e => setFormData({ ...formData, proctoringSettings: { ...formData.proctoringSettings, enable_audio: e.target.checked } })}
+                style={{ width: '20px', height: '20px', accentColor: '#DC2626' }}
+              />
+              <div>
+                <span style={{ fontWeight: 'bold', display: 'block' }}>Audio Mon.</span>
+                <span style={{ fontSize: '0.8rem', color: '#6B7280' }}>Detect speaking</span>
+              </div>
+            </label>
+          </div>
         </div>
 
         <div className={styles.section}>
@@ -240,7 +301,7 @@ export default function CreateTestPage() {
         <button type="submit" disabled={isSubmitting} className={styles.submitBtn}>
           {isSubmitting ? 'Creating...' : 'Create Test'}
         </button>
-      </form>
-    </div>
+      </form >
+    </div >
   );
 }

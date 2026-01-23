@@ -31,8 +31,8 @@ export async function POST(request: NextRequest) {
       await client.query('BEGIN');
 
       const insertTestQuery = `
-        INSERT INTO tests (title, description, duration_minutes, time_limit, start_time, end_time, community_id, scheduled_at, questions)
-        VALUES ($1, $2, $3, $3, $4, $5, $6, $7, $8)
+        INSERT INTO tests (title, description, duration_minutes, time_limit, start_time, end_time, community_id, scheduled_at, questions, proctoring_settings)
+        VALUES ($1, $2, $3, $3, $4, $5, $6, $7, $8, $9)
         RETURNING id
       `;
 
@@ -48,7 +48,8 @@ export async function POST(request: NextRequest) {
         validEndTime,
         communityId ? parseInt(communityId) : null,
         validStartTime,
-        JSON.stringify(questions)
+        JSON.stringify(questions),
+        body.proctoringSettings ? JSON.stringify(body.proctoringSettings) : '{}'
       ]);
       const testId = testResult.rows[0].id;
 
