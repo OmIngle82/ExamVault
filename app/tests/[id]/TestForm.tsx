@@ -7,6 +7,7 @@ import styles from './test.module.css';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import ReportCard from '@/app/components/ReportCard';
+import Editor from '@monaco-editor/react';
 
 const MAX_WARNINGS = 3;
 
@@ -208,6 +209,42 @@ export default function TestForm({ test, questions, username, fullName, avatarUr
     return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
   }, [hasStarted, enable_fullscreen]);
 
+  // Code Execution Logic
+  const [executionResults, setExecutionResults] = useState<Record<string, { output: string; status: string; isLoading: boolean }>>({});
+
+  const runCode = async (qId: number, code: string | undefined, language: string, expectedOutput: string) => {
+    if (!code) return;
+
+    setExecutionResults(prev => ({ ...prev, [qId]: { output: 'Running...', status: 'loading', isLoading: true } }));
+
+    try {
+      const res = await fetch('/api/code/run', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ language, sourceCode: code || '', expectedOutput })
+      });
+      const data = await res.json();
+
+      setExecutionResults(prev => ({
+        ...prev,
+        [qId]: {
+          output: data.output || '(No Output)',
+          status: data.status,
+          isLoading: false
+        }
+      }));
+
+      if (data.status === 'success') {
+        addToast('Test Case Passed! 🚀', 'success');
+      } else if (data.status === 'failure') {
+        addToast('Output did not match expected result.', 'warning');
+      }
+
+    } catch (error) {
+      setExecutionResults(prev => ({ ...prev, [qId]: { output: 'Execution Failed', status: 'error', isLoading: false } }));
+    }
+  };
+
 
   // ... (Rest of component functions like submitTest, handleAnswer remain same)
 
@@ -355,6 +392,48 @@ export default function TestForm({ test, questions, username, fullName, avatarUr
                       <span className={styles.optionText}>{opt}</span>
                     </label>
                   ))}
+                </div>
+              ) : q.type === 'code' ? (
+                <div style={{ marginTop: '1rem' }}>
+                  <div style={{ border: '2px solid #e2e8f0', borderRadius: '8px', overflow: 'hidden' }}>
+                    <div style={{ background: '#f8fafc', padding: '0.5rem 1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e2e8f0' }}>
+                      <span style={{ fontWeight: 'bold', fontSize: '0.9rem', color: '#64748b' }}>{q.options[0]?.toUpperCase() || 'PYTHON'}</span>
+                      <button
+                        onClick={() => runCode(q.id, answers[q.id], q.options[0] || 'python', q.correctAnswer)}
+                        disabled={executionResults[q.id]?.isLoading}
+                        style={{ background: '#22c55e', color: 'white', border: 'none', padding: '0.4rem 1rem', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600 }}
+                      >
+                        {executionResults[q.id]?.isLoading ? 'Running...' : '▶ Run Code'}
+                      </button>
+                    </div>
+                    <Editor
+                      height="300px"
+                      defaultLanguage={q.options[0] || 'python'}
+                      defaultValue=""
+                      value={answers[q.id] || ''}
+                      onChange={(value) => handleAnswer(q.id, value || '')}
+                      theme="light"
+                      options={{
+                        minimap: { enabled: false },
+                        fontSize: 14,
+                        scrollBeyondLastLine: false
+                      }}
+                    />
+                  </div>
+                  {/* Console Output */}
+                  <div style={{
+                    marginTop: '0.5rem',
+                    background: '#1e293b',
+                    color: executionResults[q.id]?.status === 'success' ? '#4ade80' : executionResults[q.id]?.status === 'failure' ? '#f87171' : '#cbd5e1',
+                    padding: '1rem',
+                    borderRadius: '8px',
+                    fontFamily: 'monospace',
+                    minHeight: '60px',
+                    whiteSpace: 'pre-wrap'
+                  }}>
+                    <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', marginBottom: '0.5rem', opacity: 0.7 }}>Console Output:</div>
+                    {executionResults[q.id]?.output || 'Run code to see logic output...'}
+                  </div>
                 </div>
               ) : (
                 <textarea

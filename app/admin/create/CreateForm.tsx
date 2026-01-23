@@ -6,7 +6,7 @@ import { useToast } from '@/app/context/ToastContext';
 import styles from './create.module.css';
 
 type Question = {
-  type: 'text' | 'mcq';
+  type: 'text' | 'mcq' | 'code';
   prompt: string;
   options: string[];
   correctAnswer: string;
@@ -55,8 +55,14 @@ export default function CreateTestPage() {
       });
   }, [addToast]);
 
-  const addQuestion = (type: 'text' | 'mcq') => {
-    setQuestions([...questions, { type, prompt: '', options: type === 'mcq' ? ['', '', '', ''] : [], correctAnswer: '' }]);
+  const addQuestion = (type: 'text' | 'mcq' | 'code') => {
+    setQuestions([...questions, {
+      type,
+      prompt: '',
+      // For code, option[0] is language. For MCQ, it's choices.
+      options: type === 'mcq' ? ['', '', '', ''] : (type === 'code' ? ['python'] : []),
+      correctAnswer: ''
+    }]);
   };
 
   const updateQuestion = (index: number, field: string, value: any) => {
@@ -303,6 +309,7 @@ export default function CreateTestPage() {
                 onChange={e => updateQuestion(i, 'prompt', e.target.value)}
                 required />
 
+              {/* MCQ Options */}
               {q.type === 'mcq' && (
                 <div className={styles.optionsGrid}>
                   {q.options.map((opt, oIndex) => (
@@ -323,13 +330,45 @@ export default function CreateTestPage() {
                 </div>
               )}
 
+              {/* Code Question Options */}
+              {q.type === 'code' && (
+                <div style={{ background: '#1e293b', padding: '1rem', borderRadius: '8px', marginTop: '0.5rem', color: '#fff' }}>
+                  <div style={{ marginBottom: '1rem' }}>
+                    <label style={{ display: 'block', fontSize: '0.8rem', color: '#94a3b8' }}>Language</label>
+                    <select
+                      value={q.options[0] || 'python'}
+                      onChange={e => updateOption(i, 0, e.target.value)}
+                      style={{ background: '#334155', color: 'white', border: '1px solid #475569', padding: '0.5rem', borderRadius: '4px' }}
+                    >
+                      <option value="python">Python</option>
+                      <option value="javascript">JavaScript</option>
+                      <option value="typescript">TypeScript</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.8rem', color: '#94a3b8' }}>Expected Output (Run Test)</label>
+                    <textarea
+                      value={q.correctAnswer}
+                      onChange={e => updateQuestion(i, 'correctAnswer', e.target.value)}
+                      placeholder="e.g. Hello World"
+                      rows={3}
+                      style={{ width: '100%', background: '#334155', color: 'white', border: '1px solid #475569', padding: '0.5rem', borderRadius: '4px', fontFamily: 'monospace' }}
+                    />
+                    <p style={{ fontSize: '0.8rem', color: '#94a3b8', marginTop: '0.2rem' }}>We will check if the student's code stdout contains this.</p>
+                  </div>
+                </div>
+              )}
+
               <div style={{ marginTop: '1rem' }}>
                 <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '0.5rem' }}>
-                  Correct Answer:
+                  {q.type === 'code' ? 'Validation:' : 'Correct Answer:'}
                   {q.type === 'mcq' ? (
                     <span style={{ fontWeight: 'normal', marginLeft: '0.5rem', color: q.correctAnswer ? 'green' : 'red' }}>
                       {q.correctAnswer || 'Select an option above'}
                     </span>
+                  ) : q.type === 'code' ? (
+                    <span style={{ fontWeight: 'normal', marginLeft: '0.5rem', color: '#94a3b8' }}>Standard Output Check</span>
                   ) : (
                     <input
                       className={styles.promptInput}
@@ -344,8 +383,9 @@ export default function CreateTestPage() {
           ))}
 
           <div className={styles.actions}>
-            <button type="button" onClick={() => addQuestion('text')}>+ Add Text Question</button>
-            <button type="button" onClick={() => addQuestion('mcq')}>+ Add MCQ Question</button>
+            <button type="button" onClick={() => addQuestion('text')}>+ Text</button>
+            <button type="button" onClick={() => addQuestion('mcq')}>+ MCQ</button>
+            <button type="button" onClick={() => addQuestion('code')} style={{ background: '#3b82f6', color: 'white' }}>+ Code 💻</button>
             <button
               type="button"
               onClick={() => setShowAiModal(true)}
