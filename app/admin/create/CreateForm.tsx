@@ -120,9 +120,73 @@ export default function CreateTestPage() {
     }
   };
 
+  // AI Generation State
+  const [showAiModal, setShowAiModal] = useState(false);
+  const [aiTopic, setAiTopic] = useState('');
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  const generateQuestions = async () => {
+    if (!aiTopic.trim()) return;
+    setIsGenerating(true);
+    try {
+      const res = await fetch('/api/ai/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ topic: aiTopic, count: 5 })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+
+      setQuestions([...questions, ...data.questions]);
+      addToast(`Generated ${data.questions.length} questions!`, 'success');
+      setShowAiModal(false);
+      setAiTopic('');
+    } catch (err: any) {
+      addToast(err.message, 'error');
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   return (
     <div className={styles.container}>
       <h1>Create New Test</h1>
+
+      {/* AI Modal */}
+      {showAiModal && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}>
+          <div style={{ background: 'white', padding: '2rem', borderRadius: '12px', width: '400px', boxShadow: '0 10px 25px rgba(0,0,0,0.2)' }}>
+            <h2 style={{ marginTop: 0 }}>✨ AI Generator</h2>
+            <p>Enter a topic, and we'll creates 5 questions for you.</p>
+
+            <input
+              autoFocus
+              placeholder="e.g. History of Rome, Javascript Loops..."
+              value={aiTopic}
+              onChange={e => setAiTopic(e.target.value)}
+              style={{ width: '100%', padding: '0.8rem', border: '2px solid #ddd', borderRadius: '8px', marginBottom: '1rem', fontSize: '1rem' }}
+            />
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
+              <button
+                type="button"
+                onClick={() => setShowAiModal(false)}
+                style={{ padding: '0.6rem 1rem', background: 'transparent', border: 'none', cursor: 'pointer' }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={generateQuestions}
+                disabled={isGenerating}
+                style={{ padding: '0.6rem 1.2rem', background: 'linear-gradient(135deg, #6366f1, #a855f7)', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}
+              >
+                {isGenerating ? 'Generating...' : 'Generate Magic ✨'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className={styles.form}>
         <div className={styles.section}>
@@ -164,17 +228,14 @@ export default function CreateTestPage() {
               Start Time
               <input
                 type="datetime-local"
-                onChange={e => setFormData({ ...formData, startTime: e.target.value })}
-              />
+                onChange={e => setFormData({ ...formData, startTime: e.target.value })} />
             </label>
             <label>
               End Time
               <input
                 type="datetime-local"
-                onChange={e => setFormData({ ...formData, endTime: e.target.value })}
-              />
+                onChange={e => setFormData({ ...formData, endTime: e.target.value })} />
             </label>
-          </div>
           </div>
         </div>
 
@@ -186,8 +247,7 @@ export default function CreateTestPage() {
                 type="checkbox"
                 checked={formData.proctoringSettings.enable_fullscreen}
                 onChange={e => setFormData({ ...formData, proctoringSettings: { ...formData.proctoringSettings, enable_fullscreen: e.target.checked } })}
-                style={{ width: '20px', height: '20px', accentColor: '#10B981' }}
-              />
+                style={{ width: '20px', height: '20px', accentColor: '#10B981' }} />
               <div>
                 <span style={{ fontWeight: 'bold', display: 'block' }}>Force Full Screen</span>
                 <span style={{ fontSize: '0.8rem', color: '#6B7280' }}>Kick if user exits</span>
@@ -198,8 +258,7 @@ export default function CreateTestPage() {
                 type="checkbox"
                 checked={formData.proctoringSettings.tab_lock}
                 onChange={e => setFormData({ ...formData, proctoringSettings: { ...formData.proctoringSettings, tab_lock: e.target.checked } })}
-                style={{ width: '20px', height: '20px', accentColor: '#10B981' }}
-              />
+                style={{ width: '20px', height: '20px', accentColor: '#10B981' }} />
               <div>
                 <span style={{ fontWeight: 'bold', display: 'block' }}>Tab Focus Lock</span>
                 <span style={{ fontSize: '0.8rem', color: '#6B7280' }}>Track tab switches</span>
@@ -210,8 +269,7 @@ export default function CreateTestPage() {
                 type="checkbox"
                 checked={formData.proctoringSettings.enable_webcam}
                 onChange={e => setFormData({ ...formData, proctoringSettings: { ...formData.proctoringSettings, enable_webcam: e.target.checked } })}
-                style={{ width: '20px', height: '20px', accentColor: '#DC2626' }}
-              />
+                style={{ width: '20px', height: '20px', accentColor: '#DC2626' }} />
               <div>
                 <span style={{ fontWeight: 'bold', display: 'block' }}>Webcam Mon.</span>
                 <span style={{ fontSize: '0.8rem', color: '#6B7280' }}>Snapshots every 30s</span>
@@ -222,17 +280,14 @@ export default function CreateTestPage() {
                 type="checkbox"
                 checked={formData.proctoringSettings.enable_audio}
                 onChange={e => setFormData({ ...formData, proctoringSettings: { ...formData.proctoringSettings, enable_audio: e.target.checked } })}
-                style={{ width: '20px', height: '20px', accentColor: '#DC2626' }}
-              />
+                style={{ width: '20px', height: '20px', accentColor: '#DC2626' }} />
               <div>
                 <span style={{ fontWeight: 'bold', display: 'block' }}>Audio Mon.</span>
                 <span style={{ fontSize: '0.8rem', color: '#6B7280' }}>Detect speaking</span>
               </div>
             </label>
           </div>
-        </div>
-
-        <div className={styles.section}>
+        </div><div className={styles.section}>
           <h2>Questions</h2>
           {questions.map((q, i) => (
             <div key={i} className={styles.questionCard}>
@@ -246,8 +301,7 @@ export default function CreateTestPage() {
                 placeholder="Enter Question Prompt..."
                 value={q.prompt}
                 onChange={e => updateQuestion(i, 'prompt', e.target.value)}
-                required
-              />
+                required />
 
               {q.type === 'mcq' && (
                 <div className={styles.optionsGrid}>
@@ -258,14 +312,12 @@ export default function CreateTestPage() {
                         name={`correct_${i}`}
                         checked={q.correctAnswer === opt && opt !== ''}
                         onChange={() => updateQuestion(i, 'correctAnswer', opt)}
-                        title="Mark as correct answer"
-                      />
+                        title="Mark as correct answer" />
                       <input
                         placeholder={`Option ${oIndex + 1}`}
                         value={opt}
                         onChange={e => updateOption(i, oIndex, e.target.value)}
-                        required
-                      />
+                        required />
                     </div>
                   ))}
                 </div>
@@ -284,8 +336,7 @@ export default function CreateTestPage() {
                       style={{ marginTop: '0.5rem' }}
                       placeholder="Enter the expected answer key..."
                       value={q.correctAnswer}
-                      onChange={e => updateQuestion(i, 'correctAnswer', e.target.value)}
-                    />
+                      onChange={e => updateQuestion(i, 'correctAnswer', e.target.value)} />
                   )}
                 </label>
               </div>
@@ -295,10 +346,15 @@ export default function CreateTestPage() {
           <div className={styles.actions}>
             <button type="button" onClick={() => addQuestion('text')}>+ Add Text Question</button>
             <button type="button" onClick={() => addQuestion('mcq')}>+ Add MCQ Question</button>
+            <button
+              type="button"
+              onClick={() => setShowAiModal(true)}
+              style={{ marginLeft: 'auto', background: 'linear-gradient(135deg, #6366f1, #a855f7)', color: 'white', border: 'none' }}
+            >
+              ✨ AI Generate
+            </button>
           </div>
-        </div>
-
-        <button type="submit" disabled={isSubmitting} className={styles.submitBtn}>
+        </div><button type="submit" disabled={isSubmitting} className={styles.submitBtn}>
           {isSubmitting ? 'Creating...' : 'Create Test'}
         </button>
       </form >
