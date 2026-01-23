@@ -10,7 +10,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         const test = testResult.rows[0];
         if (!test) return NextResponse.json({ error: 'Test not found' }, { status: 404 });
 
-        const questions = typeof test.questions === 'string' ? JSON.parse(test.questions) : test.questions;
+        const questions = (typeof test.questions === 'string' ? JSON.parse(test.questions) : test.questions) || [];
 
         // 2. Fetch All Results
         const resultsQuery = await db.query(

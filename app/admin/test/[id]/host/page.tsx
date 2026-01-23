@@ -27,11 +27,14 @@ export default function HostPage({ params }: { params: Promise<{ id: string }> }
         fetch(`/api/tests/${testId}`)
             .then(res => res.json())
             .then(data => {
-                if (data.test) {
-                    setTest(data.test);
+                if (data && data.id) {
+                    setTest(data);
                     setQuestions(data.questions || []);
-                    setCurrentIndex(data.test.current_question_index ?? -1);
-                    setStatus(data.test.status || 'draft');
+                    setCurrentIndex(data.current_question_index ?? -1);
+                    setStatus(data.status || 'draft');
+                } else {
+                    // Handle manual 404
+                    setTest(null);
                 }
                 setLoading(false);
             })
