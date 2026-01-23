@@ -40,18 +40,19 @@ function levenshteinDistance(a: string, b: string): number {
 }
 
 /**
- * Calculates Token Overlap (Jaccard Index) for keyword coverage.
+ * Calculates Token Recall (How many model keywords are in the student answer?)
+ * This is better than Jaccard because it doesn't penalize extra explanatory words.
  */
-function calculateTokenOverlap(a: string, b: string): number {
-    const tokensA = new Set(a.toLowerCase().split(/\W+/).filter(t => t.length > 2));
-    const tokensB = new Set(b.toLowerCase().split(/\W+/).filter(t => t.length > 2));
+function calculateTokenRecall(student: string, model: string): number {
+    const tokensStudent = new Set(student.toLowerCase().split(/\W+/).filter(t => t.length > 2));
+    const tokensModel = new Set(model.toLowerCase().split(/\W+/).filter(t => t.length > 2));
 
-    if (tokensA.size === 0 || tokensB.size === 0) return 0;
+    if (tokensModel.size === 0) return 0;
 
-    const intersection = new Set([...tokensA].filter(x => tokensB.has(x)));
-    const union = new Set([...tokensA, ...tokensB]);
+    const intersection = new Set([...tokensModel].filter(x => tokensStudent.has(x)));
 
-    return intersection.size / union.size;
+    // Recall: What % of the required model keywords did the student hit?
+    return intersection.size / tokensModel.size;
 }
 
 export function gradeAnswer(studentAnswer: string, modelAnswer: string): GradingResult {
@@ -67,28 +68,42 @@ export function gradeAnswer(studentAnswer: string, modelAnswer: string): Grading
         return { score: 100, isCorrect: true, confidence: 100, reason: 'Exact match' };
     }
 
-    // 2. Token Overlap (Keywords) - Weight: 60%
-    const tokenScore = calculateTokenOverlap(cleanStudent, cleanModel) * 100;
+    // 2. Substring Match (Instant 95) - If user wrote "The capital is Paris" and answer is "Paris"
+    if (cleanStudent.includes(cleanModel)) {
+        return { score: 95, isCorrect: true, confidence: 95, reason: 'Contains exact answer' };
+    }
 
-    // 3. Levenshtein (Spelling/Phrasing) - Weight: 40%
+    // 3. Token Recall (Keywords) - Primary Driver
+    // If student mentions all key words, they should pass.
+    const tokenScore = calculateTokenRecall(cleanStudent, cleanModel) * 100;
+
+    // 4. Levenshtein (Spelling/Phrasing) - Secondary backup for short answers
     const distance = levenshteinDistance(cleanStudent, cleanModel);
     const maxLength = Math.max(cleanStudent.length, cleanModel.length);
     const levenshteinScore = ((maxLength - distance) / maxLength) * 100;
 
     // Weighted Final Score
-    // Boost token score importance for longer answers where phrasing varies
-    let finalScore = (tokenScore * 0.6) + (levenshteinScore * 0.4);
+    // We prioritize Token Recall (70%) because semantics matter more than structure
+    let finalScore = (tokenScore * 0.7) + (levenshteinScore * 0.3);
 
-    // Heuristic: If token overlap is very high (>80%), boost confidence
-    if (tokenScore > 80) finalScore = Math.max(finalScore, tokenScore);
+    // Boost: If Recall is 100% (all keywords found), minimum score is 85%
+    if (tokenScore >= 100) {
+        finalScore = Math.max(finalScore, 85);
+    }
 
-    const threshold = 70; // Passing grade
+    // Boost: If simple typo (Levenshtein > 80%), minimum score is 80%
+    if (levenshteinScore > 80) {
+        finalScore = Math.max(finalScore, 80);
+    }
+
+    // Lenient Threshold
+    const threshold = 60;
     const isCorrect = finalScore >= threshold;
 
     return {
         score: Math.round(finalScore),
         isCorrect,
         confidence: Math.round(finalScore),
-        reason: `AI Confidence: ${Math.round(finalScore)}% (Keywords: ${Math.round(tokenScore)}%, Phrasing: ${Math.round(levenshteinScore)}%)`
+        reason: `AI Confidence: ${Math.round(finalScore)}% (Keywords: ${Math.round(tokenScore)}%, Match: ${Math.round(levenshteinScore)}%)`
     };
 }
