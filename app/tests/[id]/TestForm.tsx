@@ -338,6 +338,146 @@ export default function TestForm({ test, questions, username, fullName, avatarUr
     );
   }
 
+  // Live Mode State
+  const [liveState, setLiveState] = useState<{ mode: string; status: string; current_question_index: number }>({
+    mode: test.mode || 'self_paced',
+    status: test.status || 'active',
+    current_question_index: test.current_question_index ?? -1
+  });
+
+  // Poll for Live Updates
+  useEffect(() => {
+    if (liveState.mode !== 'live' || score !== null) return;
+
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch(`/api/tests/${test.id}/live`);
+        const data = await res.json();
+
+        setLiveState(prev => {
+          // If status changed to ended, auto-submit
+          if (prev.status === 'active' && data.status === 'ended') {
+            submitTest();
+          }
+          return data;
+        });
+
+      } catch (e) { console.error('Polling error', e); }
+    }, 2000); // Poll every 2s
+
+    return () => clearInterval(interval);
+  }, [liveState.mode, test.id, score, submitTest]);
+
+  // LIVE MODE RENDER
+  if (liveState.mode === 'live' && hasStarted && score === null) {
+    const currentQIndex = liveState.current_question_index;
+    // If index is -1 or waiting
+    if (currentQIndex === -1 || liveState.status === 'draft') {
+      return (
+        <div className={styles.welcomeContainer}>
+          <div className={styles.welcomeCard} style={{ textAlign: 'center' }}>
+            <h1 style={{ fontSize: '3rem', marginBottom: '1rem' }}>⏳</h1>
+            <h2>Waiting for Host to Start...</h2>
+            <p>Sit tight! The exam will begin shortly.</p>
+            <div className={styles.spinner}></div>
+          </div>
+        </div>
+      );
+    }
+
+    const q = questions[currentQIndex];
+    if (!q) return <div>Loading Question...</div>;
+
+    return (
+      <div className={styles.layoutContainer} style={{ display: 'block', maxWidth: '800px', margin: '0 auto' }}>
+        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+          <span style={{ background: 'red', color: 'white', padding: '4px 12px', borderRadius: '16px', fontWeight: 'bold', fontSize: '0.8rem', animation: 'pulse 2s infinite' }}>🔴 LIVE SESSION</span>
+        </div>
+
+        <div className={styles.questionItem} style={{ border: '2px solid #2563eb', boxShadow: '0 10px 30px rgba(37, 99, 235, 0.1)' }}>
+          <div className={styles.questionHeader}>
+            <span>Question {currentQIndex + 1} of {questions.length}</span>
+          </div>
+          <div className={styles.prompt} style={{ fontSize: '1.5rem' }}>{q.prompt}</div>
+
+          {q.type === 'mcq' ? (
+            <div className={styles.optionsGrid}>
+              {q.options.map((opt: string, optIdx: number) => (
+                <label
+                  key={optIdx}
+                  className={`${styles.optionLabel} ${answers[q.id] === opt ? styles.selected : ''}`}
+                >
+                  <div className={styles.optionLetter}>{String.fromCharCode(65 + optIdx)}</div>
+                  <input
+                    type="radio"
+                    name={`q_${q.id}`}
+                    value={opt}
+                    checked={answers[q.id] === opt}
+                    onChange={(e) => handleAnswer(q.id, e.target.value)}
+                    style={{ display: 'none' }}
+                  />
+                  <span className={styles.optionText}>{opt}</span>
+                </label>
+              ))}
+            </div>
+          ) : q.type === 'code' ? (
+            <div style={{ marginTop: '1rem' }}>
+              <div style={{ border: '2px solid #e2e8f0', borderRadius: '8px', overflow: 'hidden' }}>
+                <div style={{ background: '#f8fafc', padding: '0.5rem 1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e2e8f0' }}>
+                  <span style={{ fontWeight: 'bold', fontSize: '0.9rem', color: '#64748b' }}>{q.options[0]?.toUpperCase() || 'PYTHON'}</span>
+                  <button
+                    onClick={() => runCode(q.id, answers[q.id], q.options[0] || 'python', q.correctAnswer)}
+                    disabled={executionResults[q.id]?.isLoading}
+                    style={{ background: '#22c55e', color: 'white', border: 'none', padding: '0.4rem 1rem', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600 }}
+                  >
+                    {executionResults[q.id]?.isLoading ? 'Running...' : '▶ Run Code'}
+                  </button>
+                </div>
+                <Editor
+                  height="300px"
+                  defaultLanguage={q.options[0] || 'python'}
+                  defaultValue=""
+                  value={answers[q.id] || ''}
+                  onChange={(value) => handleAnswer(q.id, value || '')}
+                  theme="light"
+                  options={{
+                    minimap: { enabled: false },
+                    fontSize: 14,
+                    scrollBeyondLastLine: false
+                  }}
+                />
+              </div>
+              {/* Console Output */}
+              <div style={{
+                marginTop: '0.5rem',
+                background: '#1e293b',
+                color: executionResults[q.id]?.status === 'success' ? '#4ade80' : executionResults[q.id]?.status === 'failure' ? '#f87171' : '#cbd5e1',
+                padding: '1rem',
+                borderRadius: '8px',
+                fontFamily: 'monospace',
+                minHeight: '60px',
+                whiteSpace: 'pre-wrap'
+              }}>
+                <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', marginBottom: '0.5rem', opacity: 0.7 }}>Console Output:</div>
+                {executionResults[q.id]?.output || 'Run code to see logic output...'}
+              </div>
+            </div>
+          ) : (
+            <textarea
+              className={styles.input}
+              rows={5}
+              placeholder="Type your answer here..."
+              value={answers[q.id] || ''}
+              onChange={(e) => handleAnswer(q.id, e.target.value)}
+            />
+          )}
+        </div>
+
+        <p style={{ textAlign: 'center', color: '#666', marginTop: '2rem' }}>Answer is saved automatically. Waiting for host...</p>
+      </div>
+    );
+  }
+
   // 3. Exam Interface
   return (
     <div className={styles.layoutContainer}>
