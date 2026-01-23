@@ -43,8 +43,8 @@ export async function GET(
     });
 
     const parsedSubmissions = submissions.map((sub: any) => {
-      let answers = {};
-      let feedback = {};
+      let answers: any = {};
+      let feedback: any = {};
 
       try {
         answers = (typeof sub.answers === 'string') ? JSON.parse(sub.answers) : sub.answers;
