@@ -3,7 +3,7 @@ import "./globals.css";
 import { ToastProvider } from "./context/ToastContext";
 
 export const metadata: Metadata = {
-  title: "Timed Forms | Future of Assessment",
+  title: "ExamVault | Future of Assessment",
   description: "Advanced timed testing platform with automated scheduling.",
 };
 

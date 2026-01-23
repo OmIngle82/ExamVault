@@ -27,7 +27,7 @@ export default function Sidebar({ role, username }: SidebarProps) {
         <aside className={styles.container}>
             {/* Brand */}
             <div className={styles.brand}>
-                Timed Forms
+                ExamVault
             </div>
 
             <div className={styles.card}>

@@ -21,12 +21,11 @@ const ReportCard = forwardRef<HTMLDivElement, ReportCardProps>(({ testTitle, stu
     return (
         <div ref={ref} className={styles.container}>
             <div className={styles.header}>
-                <div className={styles.brand}>
-                    <div className={styles.logo}>TF</div>
-                    <span>Timed Forms</span>
-                </div>
-                <div className={styles.date}>{date}</div>
+                <div className={styles.logo}>EV</div>
+                <span>ExamVault</span>
             </div>
+            <div className={styles.date}>{date}</div>
+
 
             <div className={styles.content}>
                 <h1 className={styles.title}>Official Report Card</h1>
@@ -79,13 +78,13 @@ const ReportCard = forwardRef<HTMLDivElement, ReportCardProps>(({ testTitle, stu
                 )}
 
                 <div className={styles.footer}>
-                    <p>This document is an electronically generated report from Timed Forms.</p>
+                    <p>This document is an electronically generated report from ExamVault.</p>
                     <div className={styles.signature}>
                         <span>Verified by System</span>
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     );
 });
 

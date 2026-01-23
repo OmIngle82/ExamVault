@@ -97,8 +97,8 @@ export default function LoginPage() {
       <div className={styles.leftPanel}>
         <div className={styles.artContent}>
           <div className={styles.brand}>
-            <div className={styles.logoIcon}>TF</div>
-            <span>Timed Forms</span>
+            <div className={styles.logoIcon}>EV</div>
+            <span>ExamVault</span>
           </div>
 
           <h1 className={styles.artTitle}>
