@@ -7,6 +7,8 @@ import MenuWidget from './MenuWidget';
 import FeaturedCard from './FeaturedCard';
 import ScheduleTile from './ScheduleTile';
 import { useRouter } from 'next/navigation';
+import Modal from './ui/Modal';
+import { useToast } from '@/app/context/ToastContext';
 import styles from './dashboard.module.css';
 
 interface DashboardClientProps {
@@ -21,16 +23,30 @@ interface DashboardClientProps {
 export default function DashboardClient({ initialTests, completedTestIds, role, username, fullName, avatarUrl }: DashboardClientProps) {
     const [tests, setTests] = useState(initialTests);
     const [searchQuery, setSearchQuery] = useState('');
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [testToDelete, setTestToDelete] = useState<number | null>(null);
     const router = useRouter();
+    const { addToast } = useToast();
 
     const activeTestsCount = tests.length;
     const completedCount = completedTestIds.length;
 
-    const handleDelete = async (id: number) => {
-        if (!confirm('Are you sure?')) return;
-        await fetch(`/api/tests/${id}`, { method: 'DELETE' });
-        setTests(prev => prev.filter(t => t.id !== id));
-        router.refresh();
+    const handleDeleteClick = (id: number) => {
+        setTestToDelete(id);
+        setIsDeleteModalOpen(true);
+    };
+
+    const confirmDelete = async () => {
+        if (!testToDelete) return;
+
+        try {
+            await fetch(`/api/tests/${testToDelete}`, { method: 'DELETE' });
+            setTests(prev => prev.filter(t => t.id !== testToDelete));
+            addToast('Test deleted successfully', 'success');
+            router.refresh();
+        } catch (e) {
+            addToast('Failed to delete test', 'error');
+        }
     };
 
     const filteredTests = tests.filter(test =>
@@ -72,7 +88,7 @@ export default function DashboardClient({ initialTests, completedTestIds, role, 
                                     test={test}
                                     isCompleted={completedTestIds.includes(test.id)}
                                     role={role}
-                                    onDelete={handleDelete}
+                                    onDelete={handleDeleteClick}
                                 />
                             ))
                         ) : (
@@ -104,6 +120,16 @@ export default function DashboardClient({ initialTests, completedTestIds, role, 
                 </div>
 
             </div>
+
+            <Modal
+                isOpen={isDeleteModalOpen}
+                onClose={() => setIsDeleteModalOpen(false)}
+                title="Delete Test?"
+                description="This action cannot be undone. All student submissions for this test will be permanently removed."
+                confirmText="Delete Forever"
+                isDestructive={true}
+                onConfirm={confirmDelete}
+            />
         </DashboardLayout>
     );
 }

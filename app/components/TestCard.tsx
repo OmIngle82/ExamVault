@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Clock, Play, MoreVertical, CheckCircle, Users } from 'lucide-react';
+import { Clock, Play, MoreVertical, CheckCircle, Users, Trash2 } from 'lucide-react';
 import styles from './testCard.module.css';
 
 interface TestCardProps {
@@ -115,8 +115,13 @@ export default function TestCard({ test, role, isCompleted, onDelete }: TestCard
 
             {/* Actions Right (Faculty only) */}
             {isFaculty && (
-                <button className={styles.menuBtn} onClick={() => onDelete && onDelete(test.id)}>
-                    <MoreVertical size={18} />
+                <button
+                    className={styles.menuBtn}
+                    onClick={() => onDelete && onDelete(test.id)}
+                    style={{ color: '#DC2626', background: '#FEE2E2', border: 'none', borderRadius: '8px', padding: '8px', cursor: 'pointer', transition: 'all 0.2s' }}
+                    title="Delete Test"
+                >
+                    <Trash2 size={18} />
                 </button>
             )}
         </div>

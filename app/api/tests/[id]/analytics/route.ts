@@ -14,7 +14,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
         // 2. Fetch All Results
         const resultsQuery = await db.query(
-            `SELECT s.id, u.full_name as student_name, s.score, s.total_questions, s.answers, s.created_at 
+            `SELECT s.id, u.full_name as student_name, s.score, s.answers, s.submitted_at as created_at 
              FROM submissions s
              JOIN users u ON s.student_id = u.id
              WHERE s.test_id = $1 
@@ -22,6 +22,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
             [id]
         );
         const submissions = resultsQuery.rows;
+        const totalQuestions = questions.length;
 
         if (submissions.length === 0) {
             return NextResponse.json({
@@ -35,8 +36,8 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
         // 3. Calculate Stats
         const scores = submissions.map(s => s.score);
-        const total = scores.length;
-        const average = scores.reduce((a, b) => a + b, 0) / total;
+        const totalAttempts = scores.length;
+        const average = scores.reduce((a, b) => a + b, 0) / totalAttempts;
         const highest = Math.max(...scores);
         const lowest = Math.min(...scores);
 
@@ -56,7 +57,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         ];
 
         submissions.forEach(s => {
-            const percentage = (s.score / s.total_questions) * 100;
+            const percentage = (s.score / totalQuestions) * 100;
             if (percentage <= 20) distribution[0].count++;
             else if (percentage <= 40) distribution[1].count++;
             else if (percentage <= 60) distribution[2].count++;
@@ -89,8 +90,8 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
                 id: q.id || idx,
                 prompt: q.prompt.substring(0, 30) + '...',
                 correctCount,
-                totalSubmissions: total,
-                accuracy: Math.round((correctCount / total) * 100)
+                totalSubmissions: totalAttempts,
+                accuracy: Math.round((correctCount / totalAttempts) * 100)
             };
         });
 
@@ -101,7 +102,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
                 median,
                 highest,
                 lowest,
-                totalAttempts: total
+                totalAttempts: totalAttempts
             },
             chartData: distribution,
             questionAnalysis: questionStats,
@@ -109,7 +110,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
                 id: s.id,
                 name: s.student_name,
                 score: s.score,
-                total: s.total_questions,
+                total: totalQuestions,
                 date: s.created_at
             }))
         });

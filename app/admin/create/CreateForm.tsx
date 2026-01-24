@@ -129,6 +129,8 @@ export default function CreateTestPage() {
   // AI Generation State
   const [showAiModal, setShowAiModal] = useState(false);
   const [aiTopic, setAiTopic] = useState('');
+  const [aiMode, setAiMode] = useState<'topic' | 'pdf'>('topic');
+  const [pdfFile, setPdfFile] = useState<File | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
 
   const generateQuestions = async () => {
@@ -154,6 +156,32 @@ export default function CreateTestPage() {
     }
   };
 
+  const generatePdfQuestions = async () => {
+    if (!pdfFile) return;
+    setIsGenerating(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', pdfFile);
+
+      const res = await fetch('/api/ai/pdf', {
+        method: 'POST',
+        body: formData
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+
+      setQuestions([...questions, ...data.questions]);
+      addToast(`Generated ${data.questions.length} questions from PDF!`, 'success');
+      setShowAiModal(false);
+      setPdfFile(null);
+    } catch (err: any) {
+      addToast(err.message, 'error');
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   return (
     <div className={styles.container}>
       <h1>Create New Test</h1>
@@ -161,17 +189,64 @@ export default function CreateTestPage() {
       {/* AI Modal */}
       {showAiModal && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}>
-          <div style={{ background: 'white', padding: '2rem', borderRadius: '12px', width: '400px', boxShadow: '0 10px 25px rgba(0,0,0,0.2)' }}>
+          <div style={{ background: 'white', padding: '2rem', borderRadius: '12px', width: '450px', boxShadow: '0 10px 25px rgba(0,0,0,0.2)' }}>
             <h2 style={{ marginTop: 0 }}>✨ AI Generator</h2>
-            <p>Enter a topic, and we'll creates 5 questions for you.</p>
+            <p style={{ color: '#666', marginBottom: '1.5rem' }}>Generate questions from a topic or a PDF file.</p>
 
-            <input
-              autoFocus
-              placeholder="e.g. History of Rome, Javascript Loops..."
-              value={aiTopic}
-              onChange={e => setAiTopic(e.target.value)}
-              style={{ width: '100%', padding: '0.8rem', border: '2px solid #ddd', borderRadius: '8px', marginBottom: '1rem', fontSize: '1rem' }}
-            />
+            <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', borderBottom: '1px solid #eee' }}>
+              <button
+                type="button"
+                onClick={() => setAiMode('topic')}
+                style={{
+                  padding: '0.5rem 1rem',
+                  background: 'none',
+                  border: 'none',
+                  borderBottom: aiMode === 'topic' ? '2px solid #6366f1' : 'none',
+                  color: aiMode === 'topic' ? '#6366f1' : '#666',
+                  fontWeight: 'bold',
+                  cursor: 'pointer'
+                }}
+              >
+                Topic
+              </button>
+              <button
+                type="button"
+                onClick={() => setAiMode('pdf')}
+                style={{
+                  padding: '0.5rem 1rem',
+                  background: 'none',
+                  border: 'none',
+                  borderBottom: aiMode === 'pdf' ? '2px solid #6366f1' : 'none',
+                  color: aiMode === 'pdf' ? '#6366f1' : '#666',
+                  fontWeight: 'bold',
+                  cursor: 'pointer'
+                }}
+              >
+                Upload PDF 📄
+              </button>
+            </div>
+
+            {aiMode === 'topic' ? (
+              <input
+                autoFocus
+                placeholder="e.g. History of Rome, Javascript Loops..."
+                value={aiTopic}
+                onChange={e => setAiTopic(e.target.value)}
+                style={{ width: '100%', padding: '0.8rem', border: '2px solid #ddd', borderRadius: '8px', marginBottom: '1rem', fontSize: '1rem' }}
+              />
+            ) : (
+              <div style={{ marginBottom: '1rem' }}>
+                <div style={{ border: '2px dashed #ddd', borderRadius: '8px', padding: '2rem', textAlign: 'center', background: '#f9fafb' }}>
+                  <input
+                    type="file"
+                    accept=".pdf"
+                    onChange={e => setPdfFile(e.target.files ? e.target.files[0] : null)}
+                    style={{ display: 'block', margin: '0 auto' }}
+                  />
+                  <p style={{ fontSize: '0.8rem', color: '#666', marginTop: '0.5rem' }}>Max 10MB. Text-based PDFs only.</p>
+                </div>
+              </div>
+            )}
 
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
               <button
@@ -183,9 +258,18 @@ export default function CreateTestPage() {
               </button>
               <button
                 type="button"
-                onClick={generateQuestions}
-                disabled={isGenerating}
-                style={{ padding: '0.6rem 1.2rem', background: 'linear-gradient(135deg, #6366f1, #a855f7)', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}
+                onClick={aiMode === 'topic' ? generateQuestions : generatePdfQuestions}
+                disabled={isGenerating || (aiMode === 'topic' ? !aiTopic.trim() : !pdfFile)}
+                style={{
+                  padding: '0.6rem 1.2rem',
+                  background: 'linear-gradient(135deg, #6366f1, #a855f7)',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontWeight: 'bold',
+                  cursor: (isGenerating || (aiMode === 'topic' ? !aiTopic.trim() : !pdfFile)) ? 'not-allowed' : 'pointer',
+                  opacity: (isGenerating || (aiMode === 'topic' ? !aiTopic.trim() : !pdfFile)) ? 0.7 : 1
+                }}
               >
                 {isGenerating ? 'Generating...' : 'Generate Magic ✨'}
               </button>
