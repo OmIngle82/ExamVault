@@ -56,6 +56,8 @@ export default function AnalyticsPage({ params }: { params: Promise<{ id: string
 
     if (loading) return <div style={{ padding: '2rem', textAlign: 'center' }}>Loading Analytics...</div>;
     if (!data) return <div>Error loading data.</div>;
+    if (data.error) return <div style={{ padding: '2rem', color: 'red' }}>Error: {data.error}</div>;
+    if (!data.stats) return <div>No statistics available.</div>;
 
     return (
         <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '2rem', fontFamily: 'sans-serif' }}>

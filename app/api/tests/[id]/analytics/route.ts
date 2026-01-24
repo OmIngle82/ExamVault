@@ -21,7 +21,8 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
         if (submissions.length === 0) {
             return NextResponse.json({
-                stats: { average: 0, median: 0, highest: 0, lowest: 0, total: 0 },
+                testTitle: test.title,
+                stats: { average: 0, median: 0, highest: 0, lowest: 0, totalAttempts: 0 },
                 chartData: [],
                 questionAnalysis: [],
                 submissions: []
