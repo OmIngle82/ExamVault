@@ -4,6 +4,8 @@ import { useState, useEffect, useState as useChartState } from 'react';
 import dynamic from 'next/dynamic';
 import DashboardLayout from './DashboardLayout';
 import Skeleton from './ui/Skeleton';
+import MotionWrapper, { itemVariants } from './ui/MotionWrapper';
+import { motion } from 'framer-motion';
 
 // Lazy load GrowthChart (Heavy Recharts bundle)
 const GrowthChart = dynamic(() => import('./GrowthChart'), {
@@ -63,38 +65,31 @@ export default function DashboardClient({ initialTests, completedTestIds, role, 
         test.description.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-    // Simulate loading for demo purposes (or use real loading state if fetching client-side)
-    // For now, we will assume initialTests are passed from server, but let's add a visual transition if filtered is empty temporarily? 
-    // Actually, let's just use it for the Chart fallback which we already did.
-    // And let's add a "Loading..." Skeleton state if we were fetching. 
-    // Since this is a Client Component with props, it renders immediately. 
-    // BUT, we can make the "GrowthChart" loading state use our new Skeleton!
-
     return (
         <DashboardLayout role={role} username={username} onSearch={setSearchQuery} fullName={fullName} avatarUrl={avatarUrl}>
-            <div className={styles.hero}>
-                <div className={styles.heroAvatar}>
+            <MotionWrapper className={styles.hero}>
+                <motion.div className={styles.heroAvatar} variants={itemVariants}>
                     <img
                         src={avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${username}`}
                         alt="profile"
                         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                     />
-                </div>
-                <div>
+                </motion.div>
+                <motion.div variants={itemVariants}>
                     <h1 className={styles.heroTitle}>Hi {fullName || username}</h1>
                     <p className={styles.heroSubtitle}>Let's start learning today.</p>
-                </div>
-            </div>
+                </motion.div>
+            </MotionWrapper>
 
             {/* Main Grid Container - REORDERED: Content Left, Widgets Right */}
-            <div className={styles.bentoGrid}>
+            <MotionWrapper className={styles.bentoGrid}>
 
                 {/* Column 1: Main Content (Tests) - NOW ON LEFT */}
                 <div className={styles.colContent}>
-                    <div className={styles.sectionHeader}>
+                    <motion.div className={styles.sectionHeader} variants={itemVariants}>
                         <h2>Attempt Test</h2>
                         <span className={styles.badge}>{filteredTests.length} Available</span>
-                    </div>
+                    </motion.div>
 
                     <div className={styles.testList}>
                         {filteredTests.length > 0 ? (
@@ -120,22 +115,26 @@ export default function DashboardClient({ initialTests, completedTestIds, role, 
 
                     {/* Square Stats moved here */}
                     <div className={styles.statsRow}>
-                        <div className={styles.statSquare} style={{ background: '#F0F9FF' }}>
+                        <motion.div className={styles.statSquare} style={{ background: '#F0F9FF' }} variants={itemVariants}>
                             <span className={styles.hugeNum}>{activeTestsCount}</span>
                             <span className={styles.statLabel}>Active Tests</span>
-                        </div>
-                        <div className={styles.statSquare} style={{ background: '#FFF1F2' }}>
+                        </motion.div>
+                        <motion.div className={styles.statSquare} style={{ background: '#FFF1F2' }} variants={itemVariants}>
                             <span className={styles.hugeNum}>{completedCount}</span>
                             <span className={styles.statLabel}>Completed</span>
-                        </div>
+                        </motion.div>
                     </div>
 
                     {/* Growth Chart Widget */}
                     {role === 'student' && (
-                        <div className={styles.card} style={{ marginBottom: '1rem', padding: '1.5rem', borderRadius: '24px', background: 'white', boxShadow: '0px 10px 40px rgba(0,0,0,0.03)' }}>
+                        <motion.div
+                            className={styles.card}
+                            style={{ marginBottom: '1rem', padding: '1.5rem', borderRadius: '24px', background: 'white', boxShadow: '0px 10px 40px rgba(0,0,0,0.03)' }}
+                            variants={itemVariants}
+                        >
                             <h3 style={{ marginBottom: '1rem' }}>📈 Performance Trend</h3>
                             <GrowthChart username={username} />
-                        </div>
+                        </motion.div>
                     )}
 
                     <ScheduleTile tests={tests} />
@@ -143,7 +142,7 @@ export default function DashboardClient({ initialTests, completedTestIds, role, 
                     {/* Removed FeaturedCard and MenuWidget as per user request */}
                 </div>
 
-            </div>
+            </MotionWrapper>
 
             <Modal
                 isOpen={isDeleteModalOpen}
@@ -157,5 +156,3 @@ export default function DashboardClient({ initialTests, completedTestIds, role, 
         </DashboardLayout>
     );
 }
-
-

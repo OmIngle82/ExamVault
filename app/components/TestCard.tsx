@@ -11,6 +11,8 @@ interface TestCardProps {
     onDelete?: (id: number) => void;
 }
 
+import { motion } from 'framer-motion';
+
 export default function TestCard({ test, role, isCompleted, onDelete }: TestCardProps) {
     const isFaculty = role === 'admin';
     const colors = ['#FEE2E2', '#FEF3C7', '#DCFCE7', '#E0F2FE', '#F3E8FF'];
@@ -19,7 +21,15 @@ export default function TestCard({ test, role, isCompleted, onDelete }: TestCard
     const isScheduledFuture = test.scheduled_at && new Date(test.scheduled_at) > new Date();
 
     return (
-        <div className={styles.card} style={{ opacity: isCompleted ? 0.8 : 1 }}>
+        <motion.div
+            className={styles.card}
+            style={{ opacity: isCompleted ? 0.8 : 1 }}
+            whileHover={{ scale: 1.02, y: -4, boxShadow: "0px 10px 20px rgba(0,0,0,0.1)" }}
+            whileTap={{ scale: 0.98 }}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+        >
             {/* Icon Left */}
             <div className={styles.iconBox} style={{ background: randomColor }}>
                 <img
@@ -124,6 +134,6 @@ export default function TestCard({ test, role, isCompleted, onDelete }: TestCard
                     <Trash2 size={18} />
                 </button>
             )}
-        </div>
+        </motion.div>
     );
 }
