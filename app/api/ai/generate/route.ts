@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Topic or Text is required' }, { status: 400 });
     }
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-3-flash-preview' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash-preview-09-2025' });
 
     const prompt = `
       You are an expert exam creator.
@@ -37,8 +37,25 @@ export async function POST(req: NextRequest) {
       Ensure "correctAnswer" exactly matches one of the strings in "options".
     `;
 
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
+    let result;
+    let retries = 3;
+    while (retries > 0) {
+      try {
+        result = await model.generateContent(prompt);
+        break;
+      } catch (e: any) {
+        if (e.message?.includes('503') || e.message?.includes('overloaded')) {
+          retries--;
+          console.log(`AI Overloaded, retrying... (${retries} left)`);
+          if (retries === 0) throw e;
+          await new Promise(r => setTimeout(r, 2000)); // Wait 2s
+          continue;
+        }
+        throw e;
+      }
+    }
+
+    const response = await result!.response;
     let textData = response.text();
 
     // Cleanup markdown if present
