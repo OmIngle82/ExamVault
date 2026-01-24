@@ -7,10 +7,13 @@ import styles from './test.module.css';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import ReportCard from '@/app/components/ReportCard';
-import Editor from '@monaco-editor/react';
+import dynamic from 'next/dynamic';
 import 'katex/dist/katex.min.css';
-import Latex from 'react-latex-next';
 import FingerprintJS from '@fingerprintjs/fingerprintjs';
+
+// Lazy Load Heavy Components
+const Editor = dynamic(() => import('@monaco-editor/react'), { ssr: false });
+const Latex = dynamic(() => import('react-latex-next'), { ssr: false });
 
 const MAX_WARNINGS = 3;
 
