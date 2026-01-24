@@ -10,6 +10,8 @@ import ReportCard from '@/app/components/ReportCard';
 import dynamic from 'next/dynamic';
 import 'katex/dist/katex.min.css';
 import FingerprintJS from '@fingerprintjs/fingerprintjs';
+import MotionWrapper, { itemVariants } from '@/app/components/ui/MotionWrapper';
+import { motion } from 'framer-motion';
 
 // Lazy Load Heavy Components
 const Editor = dynamic(() => import('@monaco-editor/react'), { ssr: false });
@@ -270,19 +272,19 @@ export default function TestForm({ test, questions, username, fullName, avatarUr
   if (!hasStarted) {
     return (
       <div className={styles.welcomeContainer}>
-        <div className={styles.welcomeCard}>
-          <h1>{test.title}</h1>
-          <p style={{ color: '#666', fontWeight: '600', marginBottom: '1rem' }}>{test.description}</p>
+        <MotionWrapper className={styles.welcomeCard}>
+          <motion.h1 variants={itemVariants}>{test.title}</motion.h1>
+          <motion.p variants={itemVariants} style={{ color: '#666', fontWeight: '600', marginBottom: '1rem' }}>{test.description}</motion.p>
 
           {/* Security Badges */}
-          <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+          <motion.div variants={itemVariants} style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
             {enable_webcam && <span style={{ background: '#FEE2E2', color: '#991B1B', padding: '4px 12px', borderRadius: '16px', fontSize: '0.8rem', fontWeight: 700 }}>📷 Webcam On</span>}
             {enable_audio && <span style={{ background: '#FEF3C7', color: '#92400E', padding: '4px 12px', borderRadius: '16px', fontSize: '0.8rem', fontWeight: 700 }}>🎤 Audio On</span>}
             {enable_fullscreen && <span style={{ background: '#ECFCCB', color: '#3F6212', padding: '4px 12px', borderRadius: '16px', fontSize: '0.8rem', fontWeight: 700 }}>⛶ Fullscreen</span>}
             {tab_lock && <span style={{ background: '#DBEAFE', color: '#1E40AF', padding: '4px 12px', borderRadius: '16px', fontSize: '0.8rem', fontWeight: 700 }}>👁️ No Tabs</span>}
-          </div>
+          </motion.div>
 
-          <div>
+          <motion.div variants={itemVariants}>
             {/* Name Input Logic (Same as before) */}
             {username ? (
               <div style={{ background: '#F3F4F6', padding: '1.25rem', borderRadius: '12px', textAlign: 'left', border: '1px solid #E5E7EB' }}>
@@ -317,15 +319,17 @@ export default function TestForm({ test, questions, username, fullName, avatarUr
                 />
               </div>
             )}
-          </div>
+          </motion.div>
 
           {/* Permissions Request Button */}
           {(enable_webcam || enable_audio) && !permissionGranted && (
-            <div style={{ marginTop: '1.5rem', padding: '1rem', background: '#FFF7ED', border: '1px solid #FED7AA', borderRadius: '8px' }}>
+            <motion.div variants={itemVariants} style={{ marginTop: '1.5rem', padding: '1rem', background: '#FFF7ED', border: '1px solid #FED7AA', borderRadius: '8px' }}>
               <p style={{ margin: 0, fontWeight: 600, color: '#9A3412', marginBottom: '1rem' }}>
                 ⚠️ This exam requires media permissions.
               </p>
-              <button
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={requestPermissions}
                 style={{
                   background: '#EA580C', color: 'white', border: 'none', padding: '0.6rem 1.2rem',
@@ -333,8 +337,8 @@ export default function TestForm({ test, questions, username, fullName, avatarUr
                 }}
               >
                 Grant Camera/Mic Access
-              </button>
-            </div>
+              </motion.button>
+            </motion.div>
           )}
 
           {/* Video Preview (Hidden/Small) */}
@@ -343,15 +347,18 @@ export default function TestForm({ test, questions, username, fullName, avatarUr
             <p style={{ fontSize: '0.8rem', color: '#22c55e', fontWeight: 600 }}>● System Ready</p>
           </div>
 
-          <button
+          <motion.button
+            variants={itemVariants}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={startTest}
             disabled={(enable_webcam || enable_audio) && !permissionGranted}
             className={styles.startBtn}
             style={{ opacity: ((enable_webcam || enable_audio) && !permissionGranted) ? 0.5 : 1 }}
           >
             Start Quiz {enable_fullscreen ? '(Fullscreen)' : ''} →
-          </button>
-        </div>
+          </motion.button>
+        </MotionWrapper>
       </div>
     );
   }
