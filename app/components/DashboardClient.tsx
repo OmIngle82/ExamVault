@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useState as useChartState } from 'react';
 import DashboardLayout from './DashboardLayout';
 import TestCard from './TestCard';
 import MenuWidget from './MenuWidget';
@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 import Modal from './ui/Modal';
 import { useToast } from '@/app/context/ToastContext';
 import styles from './dashboard.module.css';
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
 interface DashboardClientProps {
     initialTests: any[];
@@ -141,10 +142,6 @@ export default function DashboardClient({ initialTests, completedTestIds, role, 
         </DashboardLayout>
     );
 }
-
-// Sub-component for Chart
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
-import { useEffect, useState as useChartState } from 'react';
 
 function GrowthChart({ username }: { username: string }) {
     const [data, setData] = useChartState<any[]>([]);

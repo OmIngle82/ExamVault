@@ -89,8 +89,8 @@ export async function POST(
 
     // 2. Insert Submission
     const insertQuery = `
-      INSERT INTO submissions (test_id, student_id, start_time, submitted_at, answers, score, violation_count, feedback)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      INSERT INTO submissions (test_id, student_id, start_time, submitted_at, answers, score, violation_count, feedback, device_hash)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
       RETURNING id
     `;
 
@@ -102,7 +102,8 @@ export async function POST(
       JSON.stringify(answers),
       score,
       violationCount || 0,
-      JSON.stringify(detailedFeedback)
+      JSON.stringify(detailedFeedback),
+      body.deviceHash || 'unknown'
     ]);
 
     const submissionId = submissionResult.rows[0].id;

@@ -10,6 +10,7 @@ import ReportCard from '@/app/components/ReportCard';
 import Editor from '@monaco-editor/react';
 import 'katex/dist/katex.min.css';
 import Latex from 'react-latex-next';
+import FingerprintJS from '@fingerprintjs/fingerprintjs';
 
 const MAX_WARNINGS = 3;
 
@@ -41,6 +42,19 @@ export default function TestForm({ test, questions, username, fullName, avatarUr
   const videoRef = useRef<HTMLVideoElement>(null);
   const [permissionGranted, setPermissionGranted] = useState(false);
   const [warningCount, setWarningCount] = useState(0);
+
+  // Fingerprint State
+  const [deviceHash, setDeviceHash] = useState<string>('');
+
+  // Initialize Fingerprint
+  useEffect(() => {
+    const setFp = async () => {
+      const fp = await FingerprintJS.load();
+      const { visitorId } = await fp.get();
+      setDeviceHash(visitorId);
+    };
+    setFp();
+  }, []);
 
   const requestPermissions = async () => {
     try {
@@ -109,7 +123,8 @@ export default function TestForm({ test, questions, username, fullName, avatarUr
           studentName,
           answers,
           startTime,
-          violationCount: finalViolationCount
+          violationCount: finalViolationCount,
+          deviceHash // Send the hash!
         })
       });
 
@@ -133,7 +148,7 @@ export default function TestForm({ test, questions, username, fullName, avatarUr
       addToast('Error submitting test: ' + (err.message || 'Unknown'), 'error');
       setIsSubmitting(false);
     }
-  }, [isSubmitting, test.id, studentName, answers, warningCount, addToast]);
+  }, [isSubmitting, test.id, studentName, answers, warningCount, addToast, deviceHash]);
 
   const handleAnswer = (questionId: number, value: string) => {
     setAnswers(prev => ({ ...prev, [questionId]: value }));
@@ -247,8 +262,6 @@ export default function TestForm({ test, questions, username, fullName, avatarUr
     }
   };
 
-
-  // ... (Rest of component functions like submitTest, handleAnswer remain same)
 
   // 2. Welcome Screen
   if (!hasStarted) {
