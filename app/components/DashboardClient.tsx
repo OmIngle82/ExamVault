@@ -55,6 +55,13 @@ export default function DashboardClient({ initialTests, completedTestIds, role, 
         test.description.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
+    // Simulate loading for demo purposes (or use real loading state if fetching client-side)
+    // For now, we will assume initialTests are passed from server, but let's add a visual transition if filtered is empty temporarily? 
+    // Actually, let's just use it for the Chart fallback which we already did.
+    // And let's add a "Loading..." Skeleton state if we were fetching. 
+    // Since this is a Client Component with props, it renders immediately. 
+    // BUT, we can make the "GrowthChart" loading state use our new Skeleton!
+
     return (
         <DashboardLayout role={role} username={username} onSearch={setSearchQuery} fullName={fullName} avatarUrl={avatarUrl}>
             <div className={styles.hero}>
@@ -144,7 +151,9 @@ export default function DashboardClient({ initialTests, completedTestIds, role, 
 }
 
 // Lazy load GrowthChart (Heavy Recharts bundle)
+import Skeleton from './ui/Skeleton';
+
 const GrowthChart = dynamic(() => import('./GrowthChart'), {
-    loading: () => <div style={{ height: '200px', background: '#f3f4f6', borderRadius: '12px' }} />,
+    loading: () => <Skeleton height="200px" width="100%" borderRadius="12px" />,
     ssr: false
 });
