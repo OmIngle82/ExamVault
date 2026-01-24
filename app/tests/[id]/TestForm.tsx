@@ -11,6 +11,7 @@ import dynamic from 'next/dynamic';
 import 'katex/dist/katex.min.css';
 import FingerprintJS from '@fingerprintjs/fingerprintjs';
 import MotionWrapper, { itemVariants } from '@/app/components/ui/MotionWrapper';
+import LoadingSpinner from '@/app/components/ui/LoadingSpinner';
 import { motion } from 'framer-motion';
 
 // Lazy Load Heavy Components
@@ -400,11 +401,8 @@ export default function TestForm({ test, questions, username, fullName, avatarUr
     if (currentQIndex === -1 || liveState.status === 'draft') {
       return (
         <div className={styles.welcomeContainer}>
-          <div className={styles.welcomeCard} style={{ textAlign: 'center' }}>
-            <h1 style={{ fontSize: '3rem', marginBottom: '1rem' }}>⏳</h1>
-            <h2>Waiting for Host to Start...</h2>
-            <p>Sit tight! The exam will begin shortly.</p>
-            <div className={styles.spinner}></div>
+          <div className={styles.welcomeCard} style={{ textAlign: 'center', minHeight: '400px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+            <LoadingSpinner text="Waiting for Host to Start..." />
           </div>
         </div>
       );

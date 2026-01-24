@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Plus, Users, Copy } from 'lucide-react';
 import Link from 'next/link';
+import LoadingSpinner from '@/app/components/ui/LoadingSpinner';
 import { useToast } from '../../context/ToastContext';
 import Modal from '../../components/ui/Modal';
 import styles from './communities.module.css';
@@ -92,7 +93,7 @@ export default function CommunitiesClient() {
             </div>
 
             {loading ? (
-                <p>Loading...</p>
+                <LoadingSpinner text="Loading Communities..." />
             ) : (
                 <div className={styles.grid}>
                     {communities.map(c => (

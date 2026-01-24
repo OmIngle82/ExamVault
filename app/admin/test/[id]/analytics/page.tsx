@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Download, ArrowLeft, TrendingUp, Users, AlertTriangle, CheckCircle } from 'lucide-react';
+import styles from './analytics.module.css';
+import LoadingSpinner from '@/app/components/ui/LoadingSpinner';
 
 export default function AnalyticsPage({ params }: { params: Promise<{ id: string }> }) {
     const [data, setData] = useState<any>(null);
@@ -54,7 +56,7 @@ export default function AnalyticsPage({ params }: { params: Promise<{ id: string
         document.body.removeChild(link);
     };
 
-    if (loading) return <div style={{ padding: '2rem', textAlign: 'center' }}>Loading Analytics...</div>;
+    if (loading) return <LoadingSpinner text="Gathering Analytics..." />;
     if (!data) return <div>Error loading data.</div>;
     if (data.error) return <div style={{ padding: '2rem', color: 'red' }}>Error: {data.error}</div>;
     if (!data.stats) return <div>No statistics available.</div>;

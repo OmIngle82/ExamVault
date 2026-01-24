@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import LoadingSpinner from '@/app/components/ui/LoadingSpinner';
 import { useToast } from '@/app/context/ToastContext';
 import { ArrowRight, Play, Square, RefreshCcw } from 'lucide-react';
 
@@ -75,7 +76,7 @@ export default function HostPage({ params }: { params: Promise<{ id: string }> }
 
     const currentQ = questions[currentIndex];
 
-    if (loading) return <div style={{ padding: '2rem', textAlign: 'center' }}>Loading Host Panel...</div>;
+    if (loading) return <LoadingSpinner text="Preparing Host Panel..." />;
     if (!test) return <div style={{ padding: '2rem' }}>Test not found</div>;
 
     return (

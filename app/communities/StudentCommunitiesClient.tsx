@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Plus, Users, ArrowRight } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
 import styles from './communities.module.css';
+import LoadingSpinner from '@/app/components/ui/LoadingSpinner';
 
 interface Community {
     id: number;
@@ -95,7 +96,7 @@ export default function StudentCommunitiesClient() {
 
             <h3 className={styles.subHeader}>Your Groups</h3>
             {loading ? (
-                <p>Loading...</p>
+                <LoadingSpinner text="Loading Communities..." />
             ) : (
                 <div className={styles.grid}>
                     {communities.length > 0 ? communities.map(c => (
