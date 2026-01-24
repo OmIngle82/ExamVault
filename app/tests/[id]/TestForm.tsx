@@ -8,6 +8,8 @@ import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import ReportCard from '@/app/components/ReportCard';
 import Editor from '@monaco-editor/react';
+import 'katex/dist/katex.min.css';
+import Latex from 'react-latex-next';
 
 const MAX_WARNINGS = 3;
 
@@ -398,7 +400,9 @@ export default function TestForm({ test, questions, username, fullName, avatarUr
           <div className={styles.questionHeader}>
             <span>Question {currentQIndex + 1} of {questions.length}</span>
           </div>
-          <div className={styles.prompt} style={{ fontSize: '1.5rem' }}>{q.prompt}</div>
+          <div className={styles.prompt} style={{ fontSize: '1.5rem' }}>
+            <Latex>{q.prompt}</Latex>
+          </div>
 
           {q.type === 'mcq' ? (
             <div className={styles.optionsGrid}>
@@ -416,7 +420,7 @@ export default function TestForm({ test, questions, username, fullName, avatarUr
                     onChange={(e) => handleAnswer(q.id, e.target.value)}
                     style={{ display: 'none' }}
                   />
-                  <span className={styles.optionText}>{opt}</span>
+                  <span className={styles.optionText}><Latex>{opt}</Latex></span>
                 </label>
               ))}
             </div>
@@ -511,7 +515,9 @@ export default function TestForm({ test, questions, username, fullName, avatarUr
                   {isAnswered ? '✓ Answered' : '○ Pending'}
                 </span>
               </div>
-              <div className={styles.prompt}>{q.prompt}</div>
+              <div className={styles.prompt}>
+                <Latex>{q.prompt}</Latex>
+              </div>
 
               {q.type === 'mcq' ? (
                 <div className={styles.optionsGrid}>
@@ -529,7 +535,7 @@ export default function TestForm({ test, questions, username, fullName, avatarUr
                         onChange={(e) => handleAnswer(q.id, e.target.value)}
                         style={{ display: 'none' }}
                       />
-                      <span className={styles.optionText}>{opt}</span>
+                      <span className={styles.optionText}><Latex>{opt}</Latex></span>
                     </label>
                   ))}
                 </div>

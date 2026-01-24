@@ -386,6 +386,9 @@ export default function CreateTestPage() {
             <div key={i} className={styles.questionCard}>
               <div className={styles.qHeader}>
                 <span>Question {i + 1} ({(q.type || 'mcq').toUpperCase()})</span>
+                <span style={{ fontSize: '0.8rem', color: '#666', marginLeft: '1rem', fontWeight: 'normal' }}>
+                  (Use <code>$x^2$</code> for Math)
+                </span>
                 <button type="button" onClick={() => removeQuestion(i)} className={styles.deleteBtn}>Remove</button>
               </div>
 
