@@ -3,6 +3,14 @@
 import { useState, useEffect, useState as useChartState } from 'react';
 import dynamic from 'next/dynamic';
 import DashboardLayout from './DashboardLayout';
+import Skeleton from './ui/Skeleton';
+
+// Lazy load GrowthChart (Heavy Recharts bundle)
+const GrowthChart = dynamic(() => import('./GrowthChart'), {
+    loading: () => <Skeleton height="200px" width="100%" borderRadius="12px" />,
+    ssr: false
+});
+
 import TestCard from './TestCard';
 import MenuWidget from './MenuWidget';
 import FeaturedCard from './FeaturedCard';
@@ -150,10 +158,4 @@ export default function DashboardClient({ initialTests, completedTestIds, role, 
     );
 }
 
-// Lazy load GrowthChart (Heavy Recharts bundle)
-import Skeleton from './ui/Skeleton';
 
-const GrowthChart = dynamic(() => import('./GrowthChart'), {
-    loading: () => <Skeleton height="200px" width="100%" borderRadius="12px" />,
-    ssr: false
-});
