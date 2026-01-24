@@ -114,6 +114,14 @@ export default function DashboardClient({ initialTests, completedTestIds, role, 
                         </div>
                     </div>
 
+                    {/* Growth Chart Widget */}
+                    {role === 'student' && (
+                        <div className={styles.card} style={{ marginBottom: '1rem', padding: '1.5rem', borderRadius: '24px', background: 'white', boxShadow: '0px 10px 40px rgba(0,0,0,0.03)' }}>
+                            <h3 style={{ marginBottom: '1rem' }}>📈 Performance Trend</h3>
+                            <GrowthChart username={username} />
+                        </div>
+                    )}
+
                     <ScheduleTile tests={tests} />
 
                     {/* Removed FeaturedCard and MenuWidget as per user request */}
@@ -131,5 +139,43 @@ export default function DashboardClient({ initialTests, completedTestIds, role, 
                 onConfirm={confirmDelete}
             />
         </DashboardLayout>
+    );
+}
+
+// Sub-component for Chart
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { useEffect, useState as useChartState } from 'react';
+
+function GrowthChart({ username }: { username: string }) {
+    const [data, setData] = useChartState<any[]>([]);
+    const [loading, setLoading] = useChartState(true);
+
+    useEffect(() => {
+        fetch(`/api/analytics/student/growth?username=${username}`)
+            .then(res => res.json())
+            .then(json => {
+                if (json.growth) setData(json.growth);
+                setLoading(false);
+            })
+            .catch(() => setLoading(false));
+    }, [username]);
+
+    if (loading) return <div style={{ height: '150px', background: '#f9fafb', borderRadius: '12px' }} />;
+    if (data.length === 0) return <p style={{ fontSize: '0.9rem', color: '#888' }}>No data yet. Take a test!</p>;
+
+    return (
+        <div style={{ width: '100%', height: 200, marginLeft: '-20px' }}>
+            <ResponsiveContainer>
+                <LineChart data={data}>
+                    <XAxis dataKey="date" hide />
+                    <YAxis hide domain={[0, 100]} />
+                    <Tooltip
+                        contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                        itemStyle={{ color: '#6366f1', fontWeight: 'bold' }}
+                    />
+                    <Line type="monotone" dataKey="score" stroke="#6366f1" strokeWidth={3} dot={{ r: 4, fill: '#6366f1' }} />
+                </LineChart>
+            </ResponsiveContainer>
+        </div>
     );
 }
