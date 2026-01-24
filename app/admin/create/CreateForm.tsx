@@ -171,7 +171,10 @@ export default function CreateTestPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
 
-      setQuestions([...questions, ...data.questions]);
+      // Sanitize: data.questions might lack 'type'
+      const sanitised = data.questions.map((q: any) => ({ ...q, type: q.type || 'mcq' }));
+
+      setQuestions([...questions, ...sanitised]);
       addToast(`Generated ${data.questions.length} questions from PDF!`, 'success');
       setShowAiModal(false);
       setPdfFile(null);
@@ -382,7 +385,7 @@ export default function CreateTestPage() {
           {questions.map((q, i) => (
             <div key={i} className={styles.questionCard}>
               <div className={styles.qHeader}>
-                <span>Question {i + 1} ({q.type.toUpperCase()})</span>
+                <span>Question {i + 1} ({(q.type || 'mcq').toUpperCase()})</span>
                 <button type="button" onClick={() => removeQuestion(i)} className={styles.deleteBtn}>Remove</button>
               </div>
 

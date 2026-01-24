@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
         const cleanedText = text.substring(0, 50000);
 
         // 2. Send to Gemini
-        const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+        const model = genAI.getGenerativeModel({ model: 'gemini-3-flash-preview' });
 
         const prompt = `
             You are a teacher. Create 5 multiple-choice questions based on the following text content.
@@ -46,6 +46,7 @@ export async function POST(request: NextRequest) {
             Structure:
             [
               {
+                "type": "mcq",
                 "prompt": "Question text?",
                 "options": ["A", "B", "C", "D"],
                 "correctAnswer": "A",

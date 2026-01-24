@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Topic or Text is required' }, { status: 400 });
     }
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-3-flash-preview' });
 
     const prompt = `
       You are an expert exam creator.
