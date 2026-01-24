@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useState as useChartState } from 'react';
+import dynamic from 'next/dynamic';
 import DashboardLayout from './DashboardLayout';
 import TestCard from './TestCard';
 import MenuWidget from './MenuWidget';
