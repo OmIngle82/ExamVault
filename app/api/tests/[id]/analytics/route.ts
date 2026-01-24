@@ -14,7 +14,11 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
         // 2. Fetch All Results
         const resultsQuery = await db.query(
-            'SELECT id, student_name, score, total_questions, answers, created_at FROM results WHERE test_id = $1 ORDER BY score DESC',
+            `SELECT s.id, u.full_name as student_name, s.score, s.total_questions, s.answers, s.created_at 
+             FROM submissions s
+             JOIN users u ON s.student_id = u.id
+             WHERE s.test_id = $1 
+             ORDER BY s.score DESC`,
             [id]
         );
         const submissions = resultsQuery.rows;
