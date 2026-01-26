@@ -2,14 +2,24 @@ import { NextRequest, NextResponse } from 'next/server';
 import db from '@/lib/db';
 import bcrypt from 'bcryptjs';
 import { encrypt } from '@/lib/session';
+import { z } from 'zod';
 
 export async function POST(request: NextRequest) {
   try {
-    const { username, password } = await request.json();
+    const body = await request.json();
 
-    if (!username || !password) {
-      return NextResponse.json({ error: 'Missing credentials' }, { status: 400 });
+    const LoginSchema = z.object({
+      username: z.string().min(3).max(50),
+      password: z.string().min(1)
+    });
+
+    const zodResult = LoginSchema.safeParse(body);
+
+    if (!zodResult.success) {
+      return NextResponse.json({ error: 'Invalid input format' }, { status: 400 });
     }
+
+    const { username, password } = zodResult.data;
 
     // Find user by username only first
     const result = await db.query('SELECT * FROM users WHERE username = $1', [username]);

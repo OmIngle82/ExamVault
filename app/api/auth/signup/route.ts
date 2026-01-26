@@ -2,14 +2,25 @@ import { NextRequest, NextResponse } from 'next/server';
 import db from '@/lib/db';
 import bcrypt from 'bcryptjs';
 import { encrypt } from '@/lib/session';
+import { z } from 'zod';
 
 export async function POST(request: NextRequest) {
   try {
-    const { username, password, role } = await request.json();
+    const body = await request.json();
 
-    if (!username || !password) {
-      return NextResponse.json({ error: 'Username and password are required' }, { status: 400 });
+    const SignupSchema = z.object({
+      username: z.string().min(3).max(50),
+      password: z.string().min(6, "Password must be at least 6 characters"),
+      role: z.enum(['admin', 'student']).default('student')
+    });
+
+    const zodResult = SignupSchema.safeParse(body);
+
+    if (!zodResult.success) {
+      return NextResponse.json({ error: zodResult.error.issues[0].message }, { status: 400 });
     }
+
+    const { username, password, role } = zodResult.data;
 
     // Check if user exists
     const existingCheck = await db.query('SELECT id FROM users WHERE username = $1', [username]);
@@ -18,8 +29,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Create user
-    // User can now choose role ('admin' or 'student')
-    const finalRole = (role === 'admin' || role === 'student') ? role : 'student';
+    // Role is validated by Zod
+    const finalRole = role;
 
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
