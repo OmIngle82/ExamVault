@@ -14,8 +14,6 @@ const GrowthChart = dynamic(() => import('./GrowthChart'), {
 });
 
 import TestCard from './TestCard';
-import MenuWidget from './MenuWidget';
-import FeaturedCard from './FeaturedCard';
 import ScheduleTile from './ScheduleTile';
 import { useRouter } from 'next/navigation';
 import Modal from './ui/Modal';

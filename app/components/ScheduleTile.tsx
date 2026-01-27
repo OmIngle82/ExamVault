@@ -108,7 +108,7 @@ export default function ScheduleTile({ tests }: ScheduleTileProps) {
                                     {test.title}
                                 </div>
                                 <div style={{ fontSize: '0.75rem', color: '#9CA3AF' }}>
-                                    {test.duration} mins • 20 Qs
+                                    {test.duration_minutes || test.time_limit} mins • {Array.isArray(test.questions) ? test.questions.length : (test.questions ? JSON.parse(test.questions).length : 0)} Qs
                                 </div>
                             </div>
                         </div>

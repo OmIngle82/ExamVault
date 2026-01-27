@@ -11,14 +11,6 @@ interface TopBarProps {
 }
 
 export default function TopBar({ username, onSearch, fullName, avatarUrl }: TopBarProps) {
-    // Mock avatars for the "social proof" row
-    const avatars = [
-        { bg: '#E0F2FE', color: '#0369A1' },
-        { bg: '#DCFCE7', color: '#15803D' },
-        { bg: '#FEF3C7', color: '#B45309' },
-        { bg: '#FEE2E2', color: '#B91C1C' },
-        { bg: '#F3E8FF', color: '#7E22CE' },
-    ];
 
     return (
         <header className={styles.topbar}>
