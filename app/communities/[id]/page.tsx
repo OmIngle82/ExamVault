@@ -3,7 +3,7 @@ import { decrypt } from '@/lib/session';
 import db from '@/lib/db';
 import { redirect } from 'next/navigation';
 import DashboardLayout from '../../components/DashboardLayout';
-import CommunityDetailsClient from './CommunityDetailsClient';
+import CommunityDetailsClient from '@/app/communities/[id]/CommunityDetailsClient';
 
 export default async function CommunityDetailsPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;

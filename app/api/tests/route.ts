@@ -1,6 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server';
 import db from '@/lib/db';
 
+// GET: Fetch tests (optional filter by communityId)
+export async function GET(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const communityId = searchParams.get('communityId');
+
+    let query = 'SELECT id, title, description, duration_minutes, questions, start_time FROM tests';
+    const values: any[] = [];
+
+    if (communityId) {
+      query += ' WHERE community_id = $1';
+      values.push(parseInt(communityId));
+    }
+
+    query += ' ORDER BY created_at DESC';
+
+    const result = await db.query(query, values);
+    return NextResponse.json({ tests: result.rows });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
