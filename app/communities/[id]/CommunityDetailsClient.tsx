@@ -38,16 +38,27 @@ export default function CommunityDetailsClient({ community, userId, username }: 
     return (
         <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
             {/* Header */}
+            {/* Header */}
             <div style={{
-                background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)',
-                padding: '2rem',
-                borderRadius: '24px',
-                color: 'white',
                 marginBottom: '2rem',
-                boxShadow: '0 10px 30px rgba(99, 102, 241, 0.2)'
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'end'
             }}>
-                <h1 style={{ margin: 0, fontSize: '2rem' }}>{community.name}</h1>
-                <p style={{ opacity: 0.9, marginTop: '0.5rem' }}>{community.description}</p>
+                <div>
+                    <h1 style={{ margin: 0, fontSize: '2rem', fontWeight: 800, color: '#1f2937' }}>{community.name}</h1>
+                    <p style={{ color: '#6b7280', marginTop: '0.5rem', fontSize: '1rem' }}>{community.description}</p>
+                </div>
+                <div style={{
+                    background: '#eff6ff',
+                    color: '#2563eb',
+                    padding: '0.5rem 1rem',
+                    borderRadius: '8px',
+                    fontWeight: 600,
+                    fontSize: '0.9rem'
+                }}>
+                    Code: <span style={{ fontFamily: 'monospace' }}>{community.code}</span>
+                </div>
             </div>
 
             {/* Tabs */}
