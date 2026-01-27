@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Plus, Users, ArrowRight } from 'lucide-react';
+import Link from 'next/link';
 import { useToast } from '../context/ToastContext';
 import styles from './communities.module.css';
 import LoadingSpinner from '@/app/components/ui/LoadingSpinner';
@@ -100,13 +101,15 @@ export default function StudentCommunitiesClient() {
             ) : (
                 <div className={styles.grid}>
                     {communities.length > 0 ? communities.map(c => (
-                        <div key={c.id} className={styles.card}>
-                            <div className={styles.cardHeader}>
-                                <h3>{c.name}</h3>
-                                <span className={styles.adminTag}>By @{c.admin_id}</span>
+                        <Link href={`/communities/${c.id}`} key={c.id} style={{ textDecoration: 'none', color: 'inherit' }}>
+                            <div className={styles.card}>
+                                <div className={styles.cardHeader}>
+                                    <h3>{c.name}</h3>
+                                    <span className={styles.adminTag}>By @{c.admin_id}</span>
+                                </div>
+                                <p className={styles.desc}>{c.description || 'No description'}</p>
                             </div>
-                            <p className={styles.desc}>{c.description || 'No description'}</p>
-                        </div>
+                        </Link>
                     )) : (
                         <p style={{ color: '#9CA3AF' }}>You haven't joined any communities yet.</p>
                     )}
