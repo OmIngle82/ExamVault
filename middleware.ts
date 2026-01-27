@@ -40,10 +40,11 @@ export async function middleware(request: NextRequest) {
     let response = NextResponse.next();
 
     // Define public paths
-    const isPublic = pathname.startsWith('/api/auth') || 
-                     pathname === '/login' || 
-                     pathname.startsWith('/_next') || 
-                     pathname.startsWith('/static');
+    const isPublic = pathname.startsWith('/api/auth') ||
+        pathname.startsWith('/api/debug') ||
+        pathname === '/login' ||
+        pathname.startsWith('/_next') ||
+        pathname.startsWith('/static');
 
     // --- 2. Auth Protection ---
     if (!isPublic) {

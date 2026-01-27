@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/app/context/ToastContext';
 import styles from './create.module.css';
+import CertificateEditor from '@/app/components/CertificateEditor';
 
 type Question = {
   type: 'text' | 'mcq' | 'code';
@@ -26,7 +27,15 @@ export default function CreateTestPage() {
       enable_webcam: false,
       enable_audio: false,
       enable_fullscreen: true,
+      enable_fullscreen: true,
       tab_lock: true
+    },
+    certificateSettings: {
+      enabled: false,
+      issuer: 'ExamVault',
+      title: 'Certificate of Completion',
+      signatureTitle: 'Instructor',
+      minScore: 80
     }
   });
 
@@ -103,7 +112,9 @@ export default function CreateTestPage() {
             return { ...q, options: q.options.filter(o => o.trim() !== '') };
           }
           return q;
-        })
+        }),
+        certificateEnabled: formData.certificateSettings.enabled,
+        certificateSettings: formData.certificateSettings
       };
 
       const res = await fetch('/api/tests', {
@@ -380,7 +391,17 @@ export default function CreateTestPage() {
               </div>
             </label>
           </div>
-        </div><div className={styles.section}>
+        </div>
+
+        <div className={styles.section}>
+          <h2>Certificates 🎓</h2>
+          <CertificateEditor
+            settings={formData.certificateSettings}
+            onChange={(newSettings) => setFormData({ ...formData, certificateSettings: newSettings })}
+          />
+        </div>
+
+        <div className={styles.section}>
           <h2>Questions</h2>
           {questions.map((q, i) => (
             <div key={i} className={styles.questionCard}>
