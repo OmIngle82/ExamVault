@@ -32,7 +32,7 @@ export async function POST(
   }
 
   // Fetch Test and Questions (to access correct answers)
-  const testResult = await db.query('SELECT * FROM tests WHERE id = $1', [id]);
+  const testResult = await db.query('SELECT id, duration_minutes, certificate_enabled, certificate_settings FROM tests WHERE id = $1', [id]);
   const test = testResult.rows[0];
 
   const questionsResult = await db.query('SELECT id, type, correct_answer FROM questions WHERE test_id = $1', [id]);
@@ -131,13 +131,31 @@ export async function POST(
       test.duration_minutes * 60
     );
 
+    // Check for Certificate Eligibility
+    let certificate = null;
+    if (test.certificate_enabled) {
+      const percentage = (score / questions.length) * 100;
+      const settings = test.certificate_settings || {};
+      const minScore = settings.minScore || 50; // Default 50%
+
+      if (percentage >= minScore) {
+        certificate = {
+          ...settings,
+          studentName: user.full_name || user.username,
+          date: new Date().toLocaleDateString(),
+          courseName: test.title || 'Exam'
+        };
+      }
+    }
+
     return NextResponse.json({
       success: true,
       submissionId,
       score: score,
       total: questions.length,
       feedback: detailedFeedback,
-      gamification: gamificationResult // Return XP and Badges
+      gamification: gamificationResult, // Return XP and Badges
+      certificate // Return certificate if earned
     });
 
   } catch (error: any) {

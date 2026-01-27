@@ -27,7 +27,6 @@ export default function CreateTestPage() {
       enable_webcam: false,
       enable_audio: false,
       enable_fullscreen: true,
-      enable_fullscreen: true,
       tab_lock: true
     },
     certificateSettings: {

@@ -4,6 +4,8 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/app/context/ToastContext';
 import styles from './test.module.css';
+import certStyles from '@/app/components/certificate.module.css';
+import { Award, CheckCircle, Download } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import ReportCard from '@/app/components/ReportCard';
@@ -36,7 +38,8 @@ export default function TestForm({ test, questions, username, fullName, avatarUr
   const [score, setScore] = useState<number | null>(null);
   const [totalQuestions, setTotalQuestions] = useState(0);
   const [feedback, setFeedback] = useState<Record<string, { correct: boolean; correctAnswer: string }>>({});
-  const [gamification, setGamification] = useState<any>(null); // New State
+  const [gamification, setGamification] = useState<any>(null);
+  const [certificate, setCertificate] = useState<any>(null); // New Certificate State
   const [isReviewing, setIsReviewing] = useState(false);
 
   // Proctoring Settings
@@ -147,6 +150,7 @@ export default function TestForm({ test, questions, username, fullName, avatarUr
       setTotalQuestions(data.total);
       setFeedback(data.feedback);
       setGamification(data.gamification);
+      if (data.certificate) setCertificate(data.certificate);
       addToast('Test submitted successfully!', 'success');
 
     } catch (err: any) {
@@ -174,10 +178,28 @@ export default function TestForm({ test, questions, username, fullName, avatarUr
   };
 
   const reportCardRef = useRef<HTMLDivElement>(null);
+  const certificateRef = useRef<HTMLDivElement>(null);
+
+  const downloadCertificate = async () => {
+    if (!certificateRef.current) return;
+    try {
+      addToast('generating certificate...', 'info');
+      const canvas = await html2canvas(certificateRef.current, { scale: 2, useCORS: true });
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('l', 'mm', 'a4'); // Landscape
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      pdf.save(`Certificate_${certificate.studentName}.pdf`);
+      addToast('Certificate Downloaded! 🎓', 'success');
+    } catch (e) {
+      console.error(e);
+      addToast('Failed to download certificate', 'error');
+    }
+  };
 
   const downloadPDF = async () => {
     if (!reportCardRef.current) return;
-
     try {
       addToast('Generating Report Card...', 'info');
       const canvas = await html2canvas(reportCardRef.current, { scale: 2 });
@@ -192,6 +214,30 @@ export default function TestForm({ test, questions, username, fullName, avatarUr
     } catch (err) {
       console.error(err);
       addToast('Failed to generate PDF', 'error');
+    }
+  };
+
+  const requestReview = async (questionId: number, code: string, lang: string) => {
+    try {
+      addToast('Submitting review request...', 'info');
+      const res = await fetch('/api/reviews', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          test_id: test.id,
+          question_id: questionId,
+          code_snippet: code,
+          language: lang
+        })
+      });
+      const d = await res.json();
+      if (res.ok) {
+        addToast('Review request submitted!', 'success');
+      } else {
+        addToast(d.error || 'Failed to request review', 'error');
+      }
+    } catch (e) {
+      addToast('Error requesting review', 'error');
     }
   };
 
@@ -506,7 +552,106 @@ export default function TestForm({ test, questions, username, fullName, avatarUr
     );
   }
 
-  // 3. Exam Interface
+
+  // 3. Result Screen (Score is available)
+  if (score !== null) {
+    return (
+      <div className={styles.layoutContainer}>
+        <div style={{ maxWidth: '800px', margin: '0 auto', padding: '1rem' }}>
+          <MotionWrapper>
+            <div style={{ background: 'white', padding: '2rem', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', textAlign: 'center' }}>
+              <ReportCard
+                ref={reportCardRef}
+                testTitle={test.title}
+                studentName={studentName || username || 'Student'}
+                score={score}
+                totalQuestions={totalQuestions}
+                date={new Date().toLocaleDateString()}
+                xpEarned={gamification?.xp}
+                badgesUnlocked={gamification?.badges}
+              />
+
+              <div style={{ marginTop: '2rem', display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+                <button onClick={() => router.push('/dashboard')} className={styles.secondaryBtn} style={{ padding: '0.8rem 1.5rem', borderRadius: '8px', border: '1px solid #E5E7EB', background: 'white', cursor: 'pointer', fontWeight: 600 }}>
+                  Back to Dashboard
+                </button>
+                <button onClick={downloadPDF} className={styles.primaryBtn} style={{ background: '#4F46E5', color: 'white', border: 'none', padding: '0.8rem 1.5rem', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', fontWeight: 600 }}>
+                  <Download size={18} style={{ marginRight: '8px' }} /> Download Report
+                </button>
+
+                {certificate && (
+                  <button onClick={downloadCertificate} className={styles.primaryBtn} style={{ background: '#059669', color: 'white', border: 'none', padding: '0.8rem 1.5rem', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', fontWeight: 600 }}>
+                    <Award size={18} style={{ marginRight: '8px' }} /> Download Certificate
+                  </button>
+                )}
+              </div>
+            </div>
+          </MotionWrapper>
+        </div>
+
+        {/* Review Answers Section */}
+        <div style={{ maxWidth: '800px', margin: '3rem auto', padding: '1rem' }}>
+          <h2 style={{ textAlign: 'center', marginBottom: '1.5rem', fontSize: '1.5rem' }}>Review Your Answers</h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            {questions.map((q, idx) => (
+              <div key={q.id} style={{ background: 'white', padding: '1.5rem', borderRadius: '12px', border: '1px solid #E5E7EB', boxShadow: '0 2px 5px rgba(0,0,0,0.02)' }}>
+                <div style={{ fontWeight: 'bold', marginBottom: '0.5rem', color: '#374151' }}>
+                  <span style={{ color: '#6B7280', marginRight: '0.5rem' }}>Q{idx + 1}:</span>
+                  <Latex>{q.prompt}</Latex>
+                </div>
+                <div style={{ background: '#F9FAFB', padding: '1rem', borderRadius: '8px', marginBottom: '1rem', whiteSpace: 'pre-wrap', fontFamily: 'monospace', border: '1px solid #E5E7EB', fontSize: '0.9rem' }}>
+                  {answers[q.id] || '(No Answer)'}
+                </div>
+                {q.type === 'code' && answers[q.id] && (
+                  <button
+                    onClick={() => requestReview(q.id, answers[q.id], q.options[0] || 'python')}
+                    style={{ background: 'white', border: '1px solid #4F46E5', color: '#4F46E5', padding: '0.6rem 1.2rem', borderRadius: '6px', cursor: 'pointer', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                  >
+                    <span style={{ fontSize: '1.2rem' }}>📝</span> Request Peer Review
+                  </button>
+                )}
+                {q.type === 'code' && !answers[q.id] && (
+                  <span style={{ fontSize: '0.85rem', color: '#9CA3AF' }}>No code submitted to review.</span>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {certificate && (
+          <div style={{ position: 'fixed', top: '-9999px', left: '-9999px' }}>
+            <div ref={certificateRef} className={certStyles.certPaper}>
+              <div className={certStyles.watermark} />
+              <div className={certStyles.border}>
+                <div className={certStyles.header}>
+                  <Award size={48} color="#D97706" style={{ margin: '0 auto', display: 'block' }} />
+                  <h1>{certificate.issuerName || 'Certificate of Achievement'}</h1>
+                </div>
+                <div className={certStyles.bodyText}>
+                  <p>This certifies that</p>
+                  <h2 className={certStyles.studentName}>{certificate.studentName}</h2>
+                  <p>has successfully completed the exam for</p>
+                  <h3 className={certStyles.courseName}>{certificate.courseName}</h3>
+                  <p>on {certificate.date}</p>
+                </div>
+                <div className={certStyles.footer}>
+                  <div className={certStyles.signature}>
+                    <div className={certStyles.sigLine} />
+                    <p>{certificate.signatureTitle || 'Authorized Signature'}</p>
+                  </div>
+                  <div className={certStyles.seal}>
+                    <Award size={40} color="#DAA520" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // 4. Exam Interface
   return (
     <div className={styles.layoutContainer}>
       {/* Hidden Overlay Camera for Monitoring */}

@@ -10,7 +10,8 @@ import {
     Calendar,
     Zap,
     LogOut,
-    Users
+    Users,
+    MessageSquare
 } from 'lucide-react';
 import styles from './sidebar.module.css';
 
@@ -45,6 +46,11 @@ export default function Sidebar({ role, username }: SidebarProps) {
                     <Link href="/leaderboard" className={`${styles.link} ${isActive('/leaderboard') ? styles.active : ''}`}>
                         <Trophy size={20} />
                         <span>Leaderboard</span>
+                    </Link>
+
+                    <Link href="/reviews" className={`${styles.link} ${isActive('/reviews') ? styles.active : ''}`}>
+                        <MessageSquare size={20} />
+                        <span>Reviews</span>
                     </Link>
 
                     <Link href={role === 'admin' ? '/admin/communities' : '/communities'} className={`${styles.link} ${isActive(role === 'admin' ? '/admin/communities' : '/communities') ? styles.active : ''}`}>

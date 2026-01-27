@@ -59,7 +59,8 @@
     position: relative;
     border: 1px solid #E5E7EB;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-    aspect-ratio: 1.414;
+    /* aspect-ratio: 1.414; Removed to allow natural height if needed, or strictly controlled */
+    min-height: 600px;
     /* A4 Ratio mostly */
     text-align: center;
     overflow: hidden;
@@ -82,19 +83,21 @@
     border: 4px double #D97706;
     /* Goldish */
     height: 100%;
-    padding: 2rem;
+    padding: 1rem 2rem;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-between;
+    /* Switch to space-between to push header/footer apart */
+    align-items: center;
 }
 
 .header h1 {
     font-family: 'Helvetica', sans-serif;
     text-transform: uppercase;
     letter-spacing: 2px;
-    font-size: 2rem;
+    font-size: 1.8rem;
     color: #B45309;
-    margin: 1rem 0;
+    margin: 0.5rem 0;
 }
 
 .bodyText {
@@ -105,33 +108,36 @@
 }
 
 .studentName {
-    font-size: 2.5rem;
+    font-size: 2rem;
     font-family: 'Cursive', serif;
     /* Fallback */
-    margin: 0.5rem 0;
+    margin: 0.25rem 0;
     color: #111827;
     border-bottom: 1px solid #E5E7EB;
-    padding-bottom: 0.5rem;
+    padding-bottom: 0.25rem;
     display: inline-block;
 }
 
 .courseName {
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     font-weight: 700;
-    margin: 1rem 0;
+    margin: 0.25rem 0;
 }
 
 .date {
-    margin-top: 2rem;
+    margin-top: 1rem;
     color: #6B7280;
 }
 
 .footer {
-    margin-top: 3rem;
+    margin-top: 1.5rem;
     display: flex;
     justify-content: space-between;
+    width: 100%;
     align-items: flex-end;
-    padding: 0 4rem;
+    padding: 0 1rem;
+    position: relative;
+    bottom: -10px;
 }
 
 .signature {
