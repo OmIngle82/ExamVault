@@ -355,7 +355,10 @@ export default function TestForm({ test, questions, username, fullName, avatarUr
             onClick={startTest}
             disabled={(enable_webcam || enable_audio) && !permissionGranted}
             className={styles.startBtn}
-            style={{ opacity: ((enable_webcam || enable_audio) && !permissionGranted) ? 0.5 : 1 }}
+            style={{
+              opacity: ((enable_webcam || enable_audio) && !permissionGranted) ? 0.5 : 1,
+              marginTop: '2rem'
+            }}
           >
             Start Quiz {enable_fullscreen ? '(Fullscreen)' : ''} →
           </motion.button>
