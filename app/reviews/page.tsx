@@ -4,8 +4,10 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import MotionWrapper, { itemVariants } from '@/app/components/ui/MotionWrapper';
 import LoadingSpinner from '@/app/components/ui/LoadingSpinner';
-import { MessageSquare, CheckCircle, Clock } from 'lucide-react';
+import { ArrowLeft, MessageSquare, CheckCircle, Clock } from 'lucide-react';
 import dynamic from 'next/dynamic';
+import Link from 'next/link';
+import styles from './reviews.module.css';
 
 const Editor = dynamic(() => import('@monaco-editor/react'), { ssr: false });
 
@@ -57,39 +59,26 @@ export default function ReviewsPage() {
     };
 
     return (
-        <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '2rem' }}>
-            <header style={{ marginBottom: '2rem' }}>
-                <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>Peer Code Reviews</h1>
-                <p style={{ color: '#666' }}>Review code from your peers or track your requests.</p>
+        <div className={styles.container}>
+            <header className={styles.header}>
+                <Link href="/" className={styles.backLink}>
+                    <ArrowLeft size={18} /> Back to Dashboard
+                </Link>
+                <h1 className={styles.title}>Peer Code Reviews</h1>
+                <p className={styles.subtitle}>Review code from your peers or track your requests.</p>
             </header>
 
             {/* Tabs */}
-            <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', borderBottom: '2px solid #eee' }}>
+            <div className={styles.tabs}>
                 <button
                     onClick={() => { setActiveTab('open'); setSelectedReview(null); }}
-                    style={{
-                        padding: '0.75rem 1.5rem',
-                        background: 'none',
-                        border: 'none',
-                        borderBottom: activeTab === 'open' ? '3px solid #4F46E5' : '3px solid transparent',
-                        color: activeTab === 'open' ? '#4F46E5' : '#666',
-                        fontWeight: 600,
-                        cursor: 'pointer'
-                    }}
+                    className={`${styles.tabBtn} ${activeTab === 'open' ? styles.activeTab : ''}`}
                 >
                     Review Others
                 </button>
                 <button
                     onClick={() => { setActiveTab('mine'); setSelectedReview(null); }}
-                    style={{
-                        padding: '0.75rem 1.5rem',
-                        background: 'none',
-                        border: 'none',
-                        borderBottom: activeTab === 'mine' ? '3px solid #4F46E5' : '3px solid transparent',
-                        color: activeTab === 'mine' ? '#4F46E5' : '#666',
-                        fontWeight: 600,
-                        cursor: 'pointer'
-                    }}
+                    className={`${styles.tabBtn} ${activeTab === 'mine' ? styles.activeTab : ''}`}
                 >
                     My Requests
                 </button>
@@ -98,70 +87,83 @@ export default function ReviewsPage() {
             {loading ? (
                 <LoadingSpinner />
             ) : (
-                <MotionWrapper className="review-grid" style={{ display: 'grid', gridTemplateColumns: selectedReview ? '1fr' : 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
-
+                <MotionWrapper className="review-grid">
                     {/* List View */}
-                    {!selectedReview && reviews.map((r) => (
-                        <motion.div
-                            key={r.id}
-                            variants={itemVariants}
-                            style={{ background: 'white', padding: '1.5rem', borderRadius: '12px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)', border: '1px solid #E5E7EB', cursor: 'pointer' }}
-                            onClick={() => setSelectedReview(r)}
-                            whileHover={{ y: -4, boxShadow: '0 10px 15px rgba(0,0,0,0.1)' }}
-                        >
-                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                                <span style={{ fontSize: '0.8rem', fontWeight: 600, color: '#6B7280', textTransform: 'uppercase' }}>{r.language}</span>
-                                <span style={{ fontSize: '0.8rem', color: '#9CA3AF' }}>{new Date(r.created_at).toLocaleDateString()}</span>
-                            </div>
-                            <h3 style={{ fontSize: '1.1rem', marginBottom: '0.5rem' }}>
-                                {activeTab === 'open' ? `Request by @${r.requester_username}` : `Review for Question #${r.question_id}`}
-                            </h3>
-                            <div style={{ background: '#F9FAFB', padding: '0.75rem', borderRadius: '6px', fontFamily: 'monospace', fontSize: '0.9rem', color: '#4B5563', maxHeight: '100px', overflow: 'hidden', marginBottom: '1rem' }}>
-                                {r.code_snippet}
-                            </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: r.status === 'completed' ? '#10B981' : '#F59E0B', fontWeight: 600, fontSize: '0.9rem' }}>
-                                {r.status === 'completed' ? <CheckCircle size={16} /> : <Clock size={16} />}
-                                {r.status === 'completed' ? 'Completed' : 'Pending Review'}
-                            </div>
-                        </motion.div>
-                    ))}
+                    {!selectedReview && (
+                        <div className={styles.grid}>
+                            {reviews.map((r) => (
+                                <motion.div
+                                    key={r.id}
+                                    variants={itemVariants}
+                                    className={styles.card}
+                                    onClick={() => setSelectedReview(r)}
+                                    whileHover={{ y: -4 }}
+                                >
+                                    <div className={styles.cardHeader}>
+                                        <span className={styles.langBadge}>{r.language}</span>
+                                        <span className={styles.date}>{new Date(r.created_at).toLocaleDateString()}</span>
+                                    </div>
+                                    <h3 className={styles.cardTitle}>
+                                        {activeTab === 'open' ? `Request by @${r.requester_username}` : `Review for Question #${r.question_id}`}
+                                    </h3>
+                                    <div className={styles.codePreview}>
+                                        {r.code_snippet}
+                                    </div>
+                                    <div className={styles.status}>
+                                        {r.status === 'completed' ? (
+                                            <span className={styles.statusCompleted} style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                                                <CheckCircle size={16} /> Completed
+                                            </span>
+                                        ) : (
+                                            <span className={styles.statusPending} style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                                                <Clock size={16} /> Pending Review
+                                            </span>
+                                        )}
+                                    </div>
+                                </motion.div>
+                            ))}
+                        </div>
+                    )}
 
                     {reviews.length === 0 && !selectedReview && (
-                        <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '4rem', color: '#666' }}>
+                        <div className={styles.emptyState}>
                             No reviews found in this category.
                         </div>
                     )}
 
                     {/* Detail View */}
                     {selectedReview && (
-                        <div style={{ display: 'grid', gridTemplateColumns: '3fr 2fr', gap: '2rem', background: 'white', padding: '2rem', borderRadius: '16px', border: '1px solid #E5E7EB' }}>
+                        <div className={styles.detailLayout}>
                             <div>
-                                <button onClick={() => setSelectedReview(null)} style={{ marginBottom: '1rem', background: 'none', border: 'none', color: '#666', cursor: 'pointer', fontWeight: 600 }}>← Back to list</button>
-                                <h2 style={{ marginBottom: '1rem' }}>Code Snippet</h2>
-                                <div style={{ height: '400px', border: '1px solid #E5E7EB', borderRadius: '8px', overflow: 'hidden' }}>
+                                <button onClick={() => setSelectedReview(null)} className={styles.backBtn}>
+                                    <ArrowLeft size={18} /> Back to list
+                                </button>
+                                <h2 className={styles.sectionTitle}>Code Snippet</h2>
+                                <div className={styles.editorContainer}>
                                     <Editor
                                         height="100%"
                                         defaultLanguage={selectedReview.language || 'python'}
+                                        theme="light" // Force light theme for consistency
                                         value={selectedReview.code_snippet}
-                                        options={{ readOnly: true, minimap: { enabled: false } }}
+                                        options={{ readOnly: true, minimap: { enabled: false }, fontSize: 14 }}
                                     />
                                 </div>
                             </div>
 
-                            <div>
-                                <h2 style={{ marginBottom: '1rem' }}>Feedback</h2>
+                            <div className={styles.feedbackSection}>
+                                <h2 className={styles.sectionTitle}>Feedback</h2>
 
                                 {/* If viewing own completed request, show feedback */}
                                 {activeTab === 'mine' && selectedReview.status === 'completed' && (
-                                    <div style={{ background: '#F0FDF4', padding: '1.5rem', borderRadius: '8px', border: '1px solid #86EFAC' }}>
-                                        <div style={{ fontWeight: 600, color: '#166534', marginBottom: '0.5rem' }}>Reviewer: @{selectedReview.reviewer_username}</div>
-                                        <p style={{ color: '#1F2937' }}>{selectedReview.feedback}</p>
+                                    <div className={styles.feedbackDisplay}>
+                                        <div className={styles.reviewerName}>Reviewer: @{selectedReview.reviewer_username}</div>
+                                        <p className={styles.feedbackText}>{selectedReview.feedback}</p>
                                     </div>
                                 )}
 
                                 {/* If viewing own pending request */}
                                 {activeTab === 'mine' && selectedReview.status === 'pending' && (
-                                    <div style={{ background: '#FEF3C7', padding: '1.5rem', borderRadius: '8px', border: '1px solid #FDE68A', color: '#92400E' }}>
+                                    <div className={styles.pendingBox}>
                                         Your request is waiting for a reviewer.
                                     </div>
                                 )}
@@ -173,22 +175,12 @@ export default function ReviewsPage() {
                                             value={feedback}
                                             onChange={(e) => setFeedback(e.target.value)}
                                             placeholder="Write constructive feedback here..."
-                                            style={{ width: '100%', height: '200px', padding: '1rem', borderRadius: '8px', border: '1px solid #D1D5DB', marginBottom: '1rem', fontFamily: 'inherit' }}
+                                            className={styles.feedbackInput}
                                         />
                                         <button
                                             onClick={() => submitFeedback(selectedReview.id)}
                                             disabled={submitting || !feedback.trim()}
-                                            style={{
-                                                width: '100%',
-                                                padding: '0.8rem',
-                                                background: '#4F46E5',
-                                                color: 'white',
-                                                border: 'none',
-                                                borderRadius: '8px',
-                                                fontWeight: 600,
-                                                cursor: submitting || !feedback.trim() ? 'not-allowed' : 'pointer',
-                                                opacity: submitting || !feedback.trim() ? 0.7 : 1
-                                            }}
+                                            className={styles.submitBtn}
                                         >
                                             {submitting ? 'Submitting...' : 'Submit Review'}
                                         </button>

@@ -8,37 +8,43 @@ import styles from './test.module.css';
 export default async function TestPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
-  const testResult = await db.query('SELECT * FROM tests WHERE id = $1', [id]);
+  // Parallelize Data Fetching
+  const testPromise = db.query('SELECT * FROM tests WHERE id = $1', [id]);
+  const questionsPromise = db.query('SELECT * FROM questions WHERE test_id = $1', [id]);
+
+  const userPromise = (async () => {
+    const cookieStore = await cookies();
+    const session = cookieStore.get('auth_session');
+    if (!session) return null;
+
+    const sessionUser = await decrypt(session.value);
+    if (!sessionUser) return null;
+
+    const result = await db.query('SELECT full_name, avatar_url FROM users WHERE id = $1', [sessionUser.id]);
+    const dbUser = result.rows[0];
+
+    return {
+      username: sessionUser.username,
+      fullName: dbUser?.full_name || '',
+      avatarUrl: dbUser?.avatar_url || ''
+    };
+  })();
+
+  const [testResult, questionsResult, userData] = await Promise.all([
+    testPromise,
+    questionsPromise,
+    userPromise
+  ]);
+
   const test = testResult.rows[0];
+  const questions = questionsResult.rows;
 
   if (!test) {
     notFound();
   }
 
-  // Get User Session
-  const cookieStore = await cookies();
-  const session = cookieStore.get('auth_session');
-  let username = '';
-  let fullName = '';
-  let avatarUrl = '';
-
-  if (session) {
-    const sessionUser = await decrypt(session.value);
-    if (sessionUser) {
-      username = sessionUser.username;
-      // Fetch latest profile data from DB
-      const result = await db.query('SELECT full_name, avatar_url FROM users WHERE id = $1', [sessionUser.id]);
-      const dbUser = result.rows[0];
-      if (dbUser) {
-        if (dbUser.full_name) fullName = dbUser.full_name;
-        if (dbUser.avatar_url) avatarUrl = dbUser.avatar_url;
-      }
-    }
-  }
-
   // Server-side Schedule Check
   const now = new Date();
-
   if (test.scheduled_at) {
     const scheduledTime = new Date(test.scheduled_at);
     if (now < scheduledTime) {
@@ -61,9 +67,6 @@ export default async function TestPage({ params }: { params: Promise<{ id: strin
     }
   }
 
-  // Fetch Questions
-  const questionsResult = await db.query('SELECT * FROM questions WHERE test_id = $1', [id]);
-  const questions = questionsResult.rows;
   const parsedQuestions = questions.map((q: any) => ({
     ...q,
     options: q.options ? ((typeof q.options === 'string') ? JSON.parse(q.options) : q.options) : null
@@ -71,7 +74,13 @@ export default async function TestPage({ params }: { params: Promise<{ id: strin
 
   return (
     <div className={styles.container}>
-      <TestForm test={test} questions={parsedQuestions} username={username} fullName={fullName} avatarUrl={avatarUrl} />
+      <TestForm
+        test={test}
+        questions={parsedQuestions}
+        username={userData?.username || ''}
+        fullName={userData?.fullName || ''}
+        avatarUrl={userData?.avatarUrl || ''}
+      />
     </div>
   );
 }

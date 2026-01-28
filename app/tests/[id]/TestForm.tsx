@@ -6,8 +6,7 @@ import { useToast } from '@/app/context/ToastContext';
 import styles from './test.module.css';
 import certStyles from '@/app/components/certificate.module.css';
 import { Award, CheckCircle, Download } from 'lucide-react';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
+// html2canvas and jsPDF removed from top-level imports
 import ReportCard from '@/app/components/ReportCard';
 import dynamic from 'next/dynamic';
 import 'katex/dist/katex.min.css';
@@ -184,6 +183,10 @@ export default function TestForm({ test, questions, username, fullName, avatarUr
     if (!certificateRef.current) return;
     try {
       addToast('generating certificate...', 'info');
+      // Dynamic import
+      const html2canvas = (await import('html2canvas')).default;
+      const jsPDF = (await import('jspdf')).default;
+
       const canvas = await html2canvas(certificateRef.current, { scale: 2, useCORS: true });
       const imgData = canvas.toDataURL('image/png');
       const pdf = new jsPDF('l', 'mm', 'a4'); // Landscape
@@ -202,6 +205,10 @@ export default function TestForm({ test, questions, username, fullName, avatarUr
     if (!reportCardRef.current) return;
     try {
       addToast('Generating Report Card...', 'info');
+      // Dynamic import
+      const html2canvas = (await import('html2canvas')).default;
+      const jsPDF = (await import('jspdf')).default;
+
       const canvas = await html2canvas(reportCardRef.current, { scale: 2 });
       const imgData = canvas.toDataURL('image/png');
       const pdf = new jsPDF('p', 'mm', 'a4');

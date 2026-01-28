@@ -8,6 +8,7 @@ export async function POST(request: NextRequest) {
     try {
         const formData = await request.formData();
         const file = formData.get('file') as File;
+        const count = parseInt(formData.get('count') as string) || 5;
 
         if (!file) {
             return NextResponse.json({ error: 'No file uploaded' }, { status: 400 });
@@ -41,7 +42,7 @@ export async function POST(request: NextRequest) {
         const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash-preview-09-2025' });
 
         const prompt = `
-            You are a teacher. Create 5 multiple-choice questions based on the following text content.
+            You are a teacher. Create ${count} multiple-choice questions based on the following text content.
             Return ONLY a raw JSON array. Do not wrap in markdown code blocks.
             Structure:
             [

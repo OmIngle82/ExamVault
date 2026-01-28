@@ -14,6 +14,8 @@ interface Submission {
   submitted_at: string;
 }
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     const testsResult = await db.query('SELECT id, title FROM tests');
@@ -73,7 +75,6 @@ export async function GET() {
         });
 
         // Calculate Time Taken
-        // start_time might be null for old records if we didn't backfill, handle gracefully
         let durationMs = 0;
         if (sub.start_time) {
           const start = new Date(sub.start_time);
@@ -110,7 +111,12 @@ export async function GET() {
       };
     }));
 
-    return NextResponse.json(leaderboardData);
+    return NextResponse.json(leaderboardData, {
+      status: 200,
+      headers: {
+        'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=30',
+      },
+    });
   } catch (error) {
     console.error('Leaderboard Error:', error);
     return NextResponse.json({ error: 'Failed' }, { status: 500 });

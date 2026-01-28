@@ -139,6 +139,7 @@ export default function CreateTestPage() {
   // AI Generation State
   const [showAiModal, setShowAiModal] = useState(false);
   const [aiTopic, setAiTopic] = useState('');
+  const [questionCount, setQuestionCount] = useState(5);
   const [aiMode, setAiMode] = useState<'topic' | 'pdf'>('topic');
   const [pdfFile, setPdfFile] = useState<File | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -150,7 +151,7 @@ export default function CreateTestPage() {
       const res = await fetch('/api/ai/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ topic: aiTopic, count: 5 })
+        body: JSON.stringify({ topic: aiTopic, count: questionCount })
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
@@ -172,6 +173,7 @@ export default function CreateTestPage() {
     try {
       const formData = new FormData();
       formData.append('file', pdfFile);
+      formData.append('count', questionCount.toString());
 
       const res = await fetch('/api/ai/pdf', {
         method: 'POST',
@@ -260,6 +262,18 @@ export default function CreateTestPage() {
                 </div>
               </div>
             )}
+
+            <label style={{ display: 'block', marginBottom: '1.5rem', fontWeight: 600, color: '#4B5563', fontSize: '0.9rem' }}>
+              Number of Questions
+              <input
+                type="number"
+                min={1}
+                max={20}
+                value={questionCount}
+                onChange={(e) => setQuestionCount(parseInt(e.target.value) || 5)}
+                style={{ display: 'block', width: '100%', padding: '0.6rem', border: '1px solid #D1D5DB', borderRadius: '6px', marginTop: '0.4rem' }}
+              />
+            </label>
 
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
               <button
@@ -406,9 +420,7 @@ export default function CreateTestPage() {
             <div key={i} className={styles.questionCard}>
               <div className={styles.qHeader}>
                 <span>Question {i + 1} ({(q.type || 'mcq').toUpperCase()})</span>
-                <span style={{ fontSize: '0.8rem', color: '#666', marginLeft: '1rem', fontWeight: 'normal' }}>
-                  (Use <code>$x^2$</code> for Math)
-                </span>
+
                 <button type="button" onClick={() => removeQuestion(i)} className={styles.deleteBtn}>Remove</button>
               </div>
 
