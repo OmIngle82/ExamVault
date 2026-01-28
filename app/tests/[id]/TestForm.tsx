@@ -55,6 +55,13 @@ export default function TestForm({ test, questions, username, fullName, avatarUr
   // Fingerprint State
   const [deviceHash, setDeviceHash] = useState<string>('');
 
+  // Live Mode State
+  const [liveState, setLiveState] = useState<{ mode: string; status: string; current_question_index: number }>({
+    mode: test.mode || 'self_paced',
+    status: test.status || 'active',
+    current_question_index: test.current_question_index ?? -1
+  });
+
   // Initialize Fingerprint
   useEffect(() => {
     const setFp = async () => {
@@ -323,6 +330,30 @@ export default function TestForm({ test, questions, username, fullName, avatarUr
   };
 
 
+  // Poll for Live Updates
+  useEffect(() => {
+    if (liveState.mode !== 'live' || score !== null) return;
+
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch(`/api/tests/${test.id}/live`);
+        const data = await res.json();
+
+        setLiveState(prev => {
+          // If status changed to ended, auto-submit
+          if (prev.status === 'active' && data.status === 'ended') {
+            submitTest();
+          }
+          return data;
+        });
+
+      } catch (e) { console.error('Polling error', e); }
+    }, 2000); // Poll every 2s
+
+    return () => clearInterval(interval);
+  }, [liveState.mode, test.id, score, submitTest]);
+
+
   // 2. Welcome Screen
   if (!hasStarted) {
     return (
@@ -421,35 +452,7 @@ export default function TestForm({ test, questions, username, fullName, avatarUr
     );
   }
 
-  // Live Mode State
-  const [liveState, setLiveState] = useState<{ mode: string; status: string; current_question_index: number }>({
-    mode: test.mode || 'self_paced',
-    status: test.status || 'active',
-    current_question_index: test.current_question_index ?? -1
-  });
 
-  // Poll for Live Updates
-  useEffect(() => {
-    if (liveState.mode !== 'live' || score !== null) return;
-
-    const interval = setInterval(async () => {
-      try {
-        const res = await fetch(`/api/tests/${test.id}/live`);
-        const data = await res.json();
-
-        setLiveState(prev => {
-          // If status changed to ended, auto-submit
-          if (prev.status === 'active' && data.status === 'ended') {
-            submitTest();
-          }
-          return data;
-        });
-
-      } catch (e) { console.error('Polling error', e); }
-    }, 2000); // Poll every 2s
-
-    return () => clearInterval(interval);
-  }, [liveState.mode, test.id, score, submitTest]);
 
   // LIVE MODE RENDER
   if (liveState.mode === 'live' && hasStarted && score === null) {

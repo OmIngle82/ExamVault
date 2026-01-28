@@ -17,6 +17,14 @@ export default function CommunityDetailsClient({ community, userId, username }: 
         fetchTests();
     }, []);
 
+    useEffect(() => {
+        if (activeTab === 'leaderboard' && leaderboard.length === 0) {
+            fetchLeaderboard();
+        } else if (activeTab === 'members' && members.length === 0) {
+            fetchMembers();
+        }
+    }, [activeTab]);
+
     const fetchTests = async () => {
         try {
             const res = await fetch(`/api/tests?communityId=${community.id}`);
@@ -69,13 +77,7 @@ export default function CommunityDetailsClient({ community, userId, username }: 
         }
     };
 
-    if (activeTab === 'leaderboard' && leaderboard.length === 0) {
-        fetchLeaderboard();
-    }
 
-    if (activeTab === 'members' && members.length === 0) {
-        fetchMembers();
-    }
 
     return (
         <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
