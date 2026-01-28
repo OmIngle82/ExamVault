@@ -9,7 +9,8 @@
 
 .searchContainer {
     position: relative;
-    width: 450px;
+    width: 100%;
+    max-width: 450px;
     background: #EFF3F9;
     /* Light gray pill */
     border-radius: 50px;

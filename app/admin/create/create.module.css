@@ -68,6 +68,18 @@
   gap: 1.5rem;
 }
 
+@media (max-width: 768px) {
+
+  .row,
+  .optionsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .actions {
+    flex-wrap: wrap;
+  }
+}
+
 /* Question Cards */
 .questionCard {
   background: #F9FAFB;

@@ -13,7 +13,7 @@ export async function GET() {
 
     try {
         // Debug
-        // console.log('Fetching communities for user:', user.id, user.role);
+
 
         if (user.role === 'admin') {
             const result = await db.query(`

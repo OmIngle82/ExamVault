@@ -369,7 +369,7 @@ export default function TestForm({ test, questions, username, fullName, avatarUr
                   value={studentName}
                   onChange={(e) => setStudentName(e.target.value)}
                   className={styles.input}
-                  placeholder="John Doe"
+                  placeholder="Your Full Name"
                 />
               </div>
             )}

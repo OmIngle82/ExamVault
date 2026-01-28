@@ -137,3 +137,22 @@
         min-width: 300px;
     }
 }
+
+@media (max-width: 768px) {
+    .hero {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .statsRow {
+        grid-template-columns: 1fr;
+    }
+
+    .colSidebar {
+        flex-direction: column;
+    }
+
+    .colSidebar>* {
+        min-width: 100%;
+    }
+}
