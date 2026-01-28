@@ -1,6 +1,6 @@
 'use client';
 
-import { Search, Bell, User, MessageCircle } from 'lucide-react';
+import { Search, Bell, User, MessageCircle, Menu } from 'lucide-react';
 import styles from './topbar.module.css';
 
 interface TopBarProps {
@@ -8,12 +8,18 @@ interface TopBarProps {
     onSearch?: (query: string) => void;
     fullName?: string;
     avatarUrl?: string;
+    onMenuClick?: () => void;
 }
 
-export default function TopBar({ username, onSearch, fullName, avatarUrl }: TopBarProps) {
+export default function TopBar({ username, onSearch, fullName, avatarUrl, onMenuClick }: TopBarProps) {
 
     return (
         <header className={styles.topbar}>
+            {/* Mobile Menu Trigger */}
+            <button className={styles.menuBtn} onClick={onMenuClick}>
+                <Menu size={24} />
+            </button>
+
             {/* Search Area */}
             <div className={styles.searchContainer}>
                 <Search className={styles.searchIcon} size={20} />

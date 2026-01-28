@@ -1,0 +1,24 @@
+/* Main Layout Container */
+.container {
+    min-height: 100vh;
+    position: relative;
+    background: var(--bg-cream, #FDFBF7);
+}
+
+/* Main Content Area */
+.mainContent {
+    margin-left: 300px;
+    /* Desktop Sidebar Width + Gap */
+    padding-right: 2rem;
+    padding-bottom: 2rem;
+    max-width: 1600px;
+    transition: margin-left 0.3s ease;
+}
+
+@media (max-width: 900px) {
+    .mainContent {
+        margin-left: 0;
+        /* Remove margin on mobile */
+        padding: 1rem;
+    }
+}
