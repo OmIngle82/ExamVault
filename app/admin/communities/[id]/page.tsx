@@ -6,9 +6,11 @@ import DashboardLayout from '../../../components/DashboardLayout';
 import { ChevronLeft, UserPlus, Trash2, Search, Copy } from 'lucide-react';
 import { useToast } from '../../../context/ToastContext';
 import Modal from '../../../components/ui/Modal';
+import LoadingSpinner from '../../../components/ui/LoadingSpinner';
 import styles from '../communities.module.css';
 
 interface Member {
+    user_id: number;
     username: string;
     full_name: string;
     avatar_url: string;
@@ -25,6 +27,8 @@ export default function ManageCommunityPage({ params }: { params: Promise<{ id: 
     const [searchQuery, setSearchQuery] = useState('');
     const [searchResults, setSearchResults] = useState<any[]>([]);
     const { addToast } = useToast();
+
+    const [userToDelete, setUserToDelete] = useState<Member | null>(null);
 
     useEffect(() => {
         fetchData();
@@ -50,6 +54,33 @@ export default function ManageCommunityPage({ params }: { params: Promise<{ id: 
             console.error(error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleRemoveClick = (member: Member) => {
+        setUserToDelete(member);
+    };
+
+    const confirmRemove = async () => {
+        if (!userToDelete) return;
+
+        try {
+            const res = await fetch(`/api/communities/${id}/members`, {
+                method: 'DELETE',
+                body: JSON.stringify({ userIdToRemove: userToDelete.user_id })
+            });
+
+            if (res.ok) {
+                addToast('Member removed successfully', 'success');
+                setMembers(prev => prev.filter(m => m.user_id !== userToDelete.user_id));
+            } else {
+                const data = await res.json();
+                addToast(data.error || 'Failed to remove', 'error');
+            }
+        } catch (e) {
+            addToast('Error removing member', 'error');
+        } finally {
+            setUserToDelete(null);
         }
     };
 
@@ -94,7 +125,11 @@ export default function ManageCommunityPage({ params }: { params: Promise<{ id: 
         }
     };
 
-    if (loading) return <DashboardLayout role="admin" username="Admin">Loading...</DashboardLayout>;
+    if (loading) return (
+        <DashboardLayout role="admin" username="Admin">
+            <LoadingSpinner text="Loading Community..." />
+        </DashboardLayout>
+    );
 
     return (
         <DashboardLayout role="admin" username="Admin">
@@ -136,7 +171,25 @@ export default function ManageCommunityPage({ params }: { params: Promise<{ id: 
                                             <div style={{ fontSize: '0.85rem', color: '#6B7280' }}>@{m.username} • Joined {new Date(m.joined_at).toLocaleDateString()}</div>
                                         </div>
                                     </div>
-                                    {/* Optional: Remove button could go here */}
+                                    <button
+                                        onClick={() => handleRemoveClick(m)}
+                                        style={{
+                                            padding: '0.5rem',
+                                            color: '#EF4444',
+                                            background: '#FEF2F2',
+                                            border: 'none',
+                                            borderRadius: '6px',
+                                            cursor: 'pointer',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '0.5rem',
+                                            fontWeight: 600,
+                                            fontSize: '0.85rem'
+                                        }}
+                                        title="Remove Member"
+                                    >
+                                        <Trash2 size={16} /> Remove
+                                    </button>
                                 </div>
                             ))}
                         </div>
@@ -145,6 +198,7 @@ export default function ManageCommunityPage({ params }: { params: Promise<{ id: 
                     )}
                 </div>
 
+                {/* Invite Modal */}
                 <Modal
                     isOpen={showInviteModal}
                     onClose={() => setShowInviteModal(false)}
@@ -201,6 +255,18 @@ export default function ManageCommunityPage({ params }: { params: Promise<{ id: 
                         </div>
                     </div>
                 </Modal>
+
+                {/* Delete Confirmation Modal */}
+                <Modal
+                    isOpen={!!userToDelete}
+                    onClose={() => setUserToDelete(null)}
+                    title="Remove Member"
+                    description={`Are you sure you want to remove ${userToDelete?.full_name || userToDelete?.username} from this community? This action cannot be undone.`}
+                    confirmText="Remove"
+                    cancelText="Cancel"
+                    isDestructive={true}
+                    onConfirm={confirmRemove}
+                />
             </div>
         </DashboardLayout>
     );

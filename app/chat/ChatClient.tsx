@@ -5,6 +5,7 @@ import DashboardLayout from '../components/DashboardLayout';
 import { Search, Send, User } from 'lucide-react';
 import { useToast } from '@/app/context/ToastContext';
 import styles from './chat.module.css';
+import Modal from '../components/ui/Modal';
 
 interface User {
     username: string;
@@ -33,6 +34,7 @@ export default function ChatClient({ currentUser }: ChatClientProps) {
     const [messages, setMessages] = useState<Message[]>([]);
     const [newMessage, setNewMessage] = useState('');
     const [isLiveMode, setIsLiveMode] = useState(true); // Default to Online
+    const [showOfflineModal, setShowOfflineModal] = useState(false);
     const scrollRef = useRef<HTMLDivElement>(null);
 
     // Fetch Contacts
@@ -122,13 +124,18 @@ export default function ChatClient({ currentUser }: ChatClientProps) {
         }
     }, [messages]);
 
+    const confirmLiveMode = () => {
+        setIsLiveMode(true);
+        addToast('You are now Online.', 'success');
+    };
+
     const handleSend = async () => {
         if (!newMessage.trim() || !selectedUser) return;
 
         // Auto-enable live mode if offline
         if (!isLiveMode) {
-            if (!confirm("You are currently Offline. Turn on Live Chat to send messages?")) return;
-            setIsLiveMode(true);
+            setShowOfflineModal(true);
+            return;
         }
 
         const tempMsg = newMessage;
@@ -331,6 +338,15 @@ export default function ChatClient({ currentUser }: ChatClientProps) {
                     )}
                 </div>
 
+                {/* Offline Confirmation Modal */}
+                <Modal
+                    isOpen={showOfflineModal}
+                    onClose={() => setShowOfflineModal(false)}
+                    title="You are Offline"
+                    description="You are currently in offline mode. Do you want to go Online to send this message?"
+                    confirmText="Go Online"
+                    onConfirm={confirmLiveMode}
+                />
             </div>
         </DashboardLayout>
     );

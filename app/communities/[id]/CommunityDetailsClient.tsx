@@ -2,14 +2,16 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { MessageCircle, FileText, Trophy } from 'lucide-react';
+import { MessageCircle, FileText, Trophy, Users } from 'lucide-react';
 import CommunityChat from '@/app/components/CommunityChat';
+import Modal from '@/app/components/ui/Modal';
 import { motion } from 'framer-motion';
 
 export default function CommunityDetailsClient({ community, userId, username }: { community: any, userId: number, username: string }) {
-    const [activeTab, setActiveTab] = useState<'tests' | 'chat' | 'leaderboard'>('tests');
+    const [activeTab, setActiveTab] = useState<'tests' | 'chat' | 'leaderboard' | 'members'>('tests');
     const [leaderboard, setLeaderboard] = useState<any[]>([]);
     const [tests, setTests] = useState<any[]>([]);
+    const [members, setMembers] = useState<any[]>([]);
 
     useEffect(() => {
         fetchTests();
@@ -31,19 +33,60 @@ export default function CommunityDetailsClient({ community, userId, username }: 
         } catch (e) { console.error(e); }
     };
 
+    const fetchMembers = async () => {
+        try {
+            const res = await fetch(`/api/communities/${community.id}/members`);
+            const data = await res.json();
+            if (data.members) setMembers(data.members);
+        } catch (e) { console.error(e); }
+    };
+
+    const [memberToRemove, setMemberToRemove] = useState<number | null>(null);
+
+    const handleRemoveClick = (memberId: number) => {
+        setMemberToRemove(memberId);
+    };
+
+    const confirmRemoveMember = async () => {
+        if (!memberToRemove) return;
+
+        try {
+            const res = await fetch(`/api/communities/${community.id}/members`, {
+                method: 'DELETE',
+                body: JSON.stringify({ userIdToRemove: memberToRemove })
+            });
+            if (res.ok) {
+                setMembers(prev => prev.filter(m => m.user_id !== memberToRemove && m.id !== memberToRemove));
+                fetchMembers();
+                // alert('Member removed.'); // Removed alert for cleaner UX
+            } else {
+                alert('Failed to remove.'); // Ideally toast, but keeping alert for error handling consistency if toast not available here
+            }
+        } catch (e) {
+            console.error(e);
+        } finally {
+            setMemberToRemove(null);
+        }
+    };
+
     if (activeTab === 'leaderboard' && leaderboard.length === 0) {
         fetchLeaderboard();
+    }
+
+    if (activeTab === 'members' && members.length === 0) {
+        fetchMembers();
     }
 
     return (
         <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
             {/* Header */}
-            {/* Header */}
             <div style={{
                 marginBottom: '2rem',
                 display: 'flex',
                 justifyContent: 'space-between',
-                alignItems: 'end'
+                alignItems: 'end',
+                flexWrap: 'wrap',
+                gap: '1rem'
             }}>
                 <div>
                     <h1 style={{ margin: 0, fontSize: '2rem', fontWeight: 800, color: '#1f2937' }}>{community.name}</h1>
@@ -62,7 +105,7 @@ export default function CommunityDetailsClient({ community, userId, username }: 
             </div>
 
             {/* Tabs */}
-            <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', borderBottom: '1px solid #e5e7eb', paddingBottom: '0.5rem' }}>
+            <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', borderBottom: '1px solid #e5e7eb', paddingBottom: '0.5rem', overflowX: 'auto' }}>
                 <button
                     onClick={() => setActiveTab('tests')}
                     style={{
@@ -75,7 +118,8 @@ export default function CommunityDetailsClient({ community, userId, username }: 
                         cursor: 'pointer',
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '0.5rem'
+                        gap: '0.5rem',
+                        whiteSpace: 'nowrap'
                     }}
                 >
                     <FileText size={18} /> Tests
@@ -92,7 +136,8 @@ export default function CommunityDetailsClient({ community, userId, username }: 
                         cursor: 'pointer',
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '0.5rem'
+                        gap: '0.5rem',
+                        whiteSpace: 'nowrap'
                     }}
                 >
                     <MessageCircle size={18} /> Chat
@@ -109,11 +154,33 @@ export default function CommunityDetailsClient({ community, userId, username }: 
                         cursor: 'pointer',
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '0.5rem'
+                        gap: '0.5rem',
+                        whiteSpace: 'nowrap'
                     }}
                 >
                     <Trophy size={18} /> Leaderboard
                 </button>
+                {/* Admin Only Tab - Debug: {community.owner_id} vs {userId} */}
+                {(Number(community.owner_id) === Number(userId) || community.owner_id == userId) && (
+                    <button
+                        onClick={() => setActiveTab('members')}
+                        style={{
+                            padding: '0.5rem 1rem',
+                            border: 'none',
+                            background: 'transparent',
+                            color: activeTab === 'members' ? '#6366f1' : '#6b7280',
+                            fontWeight: activeTab === 'members' ? 700 : 500,
+                            borderBottom: activeTab === 'members' ? '2px solid #6366f1' : 'none',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.5rem',
+                            whiteSpace: 'nowrap'
+                        }}
+                    >
+                        <Users size={18} /> Members
+                    </button>
+                )}
             </div>
 
             {/* Content */}
@@ -201,6 +268,62 @@ export default function CommunityDetailsClient({ community, userId, username }: 
                         )}
                     </div>
                 )}
+
+                {/* MEMBERS TAB */}
+                {activeTab === 'members' && (
+                    <div style={{ background: 'white', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 2px 5px rgba(0,0,0,0.05)' }}>
+                        <div style={{ padding: '1rem', background: '#f8fafc', fontWeight: 'bold', color: '#64748b', borderBottom: '1px solid #e5e7eb' }}>
+                            Manage Students
+                        </div>
+                        {members.length > 0 ? (
+                            members.map((member) => (
+                                <div key={member.user_id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem', borderBottom: '1px solid #f1f5f9' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                        <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#e2e8f0', overflow: 'hidden' }}>
+                                            <img
+                                                src={member.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${member.username}`}
+                                                alt={member.username}
+                                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                            />
+                                        </div>
+                                        <div>
+                                            <div style={{ fontWeight: '600' }}>{member.full_name || member.username}</div>
+                                            <div style={{ fontSize: '0.85rem', color: '#64748b' }}>@{member.username}</div>
+                                            <div style={{ fontSize: '0.75rem', color: '#9ca3af' }}>Joined: {new Date(member.joined_at).toLocaleDateString()}</div>
+                                        </div>
+                                    </div>
+                                    <button
+                                        onClick={() => handleRemoveClick(member.user_id)}
+                                        style={{
+                                            background: '#ffe4e6',
+                                            color: '#e11d48',
+                                            border: 'none',
+                                            padding: '0.5rem 1rem',
+                                            borderRadius: '6px',
+                                            fontWeight: 600,
+                                            cursor: 'pointer',
+                                            fontSize: '0.85rem'
+                                        }}
+                                    >
+                                        Remove
+                                    </button>
+                                </div>
+                            ))
+                        ) : (
+                            <div style={{ padding: '2rem', textAlign: 'center', color: '#94a3b8' }}>No members found.</div>
+                        )}
+                    </div>
+                )}
+
+                <Modal
+                    isOpen={!!memberToRemove}
+                    onClose={() => setMemberToRemove(null)}
+                    title="Remove Student"
+                    description="Are you sure you want to remove this student from the community?"
+                    confirmText="Remove"
+                    isDestructive={true}
+                    onConfirm={confirmRemoveMember}
+                />
             </motion.div>
         </div>
     );

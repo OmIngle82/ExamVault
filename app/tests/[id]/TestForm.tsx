@@ -466,7 +466,7 @@ export default function TestForm({ test, questions, username, fullName, avatarUr
     }
 
     const q = questions[currentQIndex];
-    if (!q) return <div>Loading Question...</div>;
+    if (!q) return <LoadingSpinner text="Loading Question..." />;
 
     return (
       <div className={styles.layoutContainer} style={{ display: 'block', maxWidth: '800px', margin: '0 auto' }}>
