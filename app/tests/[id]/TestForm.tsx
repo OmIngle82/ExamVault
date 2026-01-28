@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useToast } from '@/app/context/ToastContext';
 import styles from './test.module.css';
 import certStyles from '@/app/components/certificate.module.css';
-import { Award, CheckCircle, Download } from 'lucide-react';
+import { Award, CheckCircle, Download, Menu, X } from 'lucide-react';
 // html2canvas and jsPDF removed from top-level imports
 import ReportCard from '@/app/components/ReportCard';
 import dynamic from 'next/dynamic';
@@ -29,6 +29,7 @@ export default function TestForm({ test, questions, username, fullName, avatarUr
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [studentName, setStudentName] = useState(username || '');
   const [hasStarted, setHasStarted] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // Ref for scrolling
   const questionRefs = useRef<Record<string, HTMLDivElement | null>>({});
@@ -771,11 +772,42 @@ export default function TestForm({ test, questions, username, fullName, avatarUr
         })}
       </div>
 
+      {/* Mobile Toggle & Backdrop */}
+      {hasStarted && !score && (
+        <>
+          <div
+            className={`${styles.backdrop} ${isSidebarOpen ? styles.backdropOpen : ''}`}
+            onClick={() => setIsSidebarOpen(false)}
+          />
+          <button
+            className={styles.mobileToggle}
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          >
+            {isSidebarOpen ? <X /> : <Menu />}
+          </button>
+        </>
+      )}
+
       {/* SIDEBAR: Timer + Palette */}
-      <div className={styles.sidebar}>
-        <div className={styles.timerBox}>
-          ⏳ {timeLeft !== null ? formatTime(timeLeft) : '...'}
+      <aside className={`${styles.sidebar} ${isSidebarOpen ? styles.sidebarOpen : ''}`}>
+        {/* Close btn for mobile inside sidebar */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+          <h3 style={{ margin: 0, fontSize: '1.2rem' }}>Tools</h3>
+          <button
+            onClick={() => setIsSidebarOpen(false)}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'none' }} // Visible via CSS if needed, but backdrop handles it
+            className="mobile-close-btn"
+          >
+            <X size={24} />
+          </button>
         </div>
+
+        {hasStarted && !score && (
+          <div className={styles.timerBox}>
+            {timeLeft !== null ? formatTime(timeLeft) : 'Loading...'}
+          </div>
+        )}
+
 
         <div>
           <h3 style={{ marginBottom: '1rem', borderBottom: '2px solid #eee', paddingBottom: '0.5rem' }}>Question Palette</h3>
@@ -812,13 +844,15 @@ export default function TestForm({ test, questions, username, fullName, avatarUr
             {isSubmitting ? 'Submitting...' : 'Submit Test'}
           </button>
         </div>
-      </div>
+      </aside>
 
-      {warningCount > 0 && (
-        <div style={{ position: 'fixed', bottom: '2rem', left: '2rem', background: 'red', color: 'white', padding: '1rem', borderRadius: '12px', zIndex: 200, fontWeight: 'bold', animation: 'pulse 1s infinite' }}>
-          ⚠️ Warnings: {warningCount}/{MAX_WARNINGS}
-        </div>
-      )}
-    </div>
+      {
+        warningCount > 0 && (
+          <div style={{ position: 'fixed', bottom: '2rem', left: '2rem', background: 'red', color: 'white', padding: '1rem', borderRadius: '12px', zIndex: 200, fontWeight: 'bold', animation: 'pulse 1s infinite' }}>
+            ⚠️ Warnings: {warningCount}/{MAX_WARNINGS}
+          </div>
+        )
+      }
+    </div >
   );
 }

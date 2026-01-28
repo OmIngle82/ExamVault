@@ -12,18 +12,30 @@
 @media (max-width: 900px) {
   .layoutContainer {
     grid-template-columns: 1fr;
-    grid-template-areas: "sidebar" "content";
+    display: block;
+    /* Remove grid to allow overlay */
   }
 
+  /* Overlay Sidebar */
   .sidebar {
-    position: relative;
+    position: fixed;
     top: 0;
-    max-height: none;
-    grid-area: sidebar;
+    right: 0;
+    height: 100vh;
+    width: 280px;
+    background: white;
+    z-index: 100;
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: -4px 0 15px rgba(0, 0, 0, 0.1);
+  }
+
+  .sidebarOpen {
+    transform: translateX(0);
   }
 
   .questionsList {
-    grid-area: content;
+    width: 100%;
   }
 
   .questionItem {
@@ -31,8 +43,55 @@
   }
 }
 
+/* Mobile Toggle Button */
+.mobileToggle {
+  display: none;
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 56px;
+  height: 56px;
+  background: var(--accent-purple);
+  color: white;
+  border-radius: 50%;
+  border: none;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+  z-index: 90;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+
+@media (max-width: 900px) {
+  .mobileToggle {
+    display: flex;
+  }
+}
+
+/* Backdrop */
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 95;
+  backdrop-filter: blur(2px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+.backdropOpen {
+  opacity: 1;
+  pointer-events: auto;
+}
+
 /* Sidebar */
 .sidebar {
+  /* Default Desktop Styles */
   position: sticky;
   top: 2rem;
   background: white;
