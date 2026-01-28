@@ -117,5 +117,59 @@
 @media (max-width: 900px) {
     .menuBtn {
         display: flex;
+        margin-right: 0.5rem;
+        grid-area: menu;
+    }
+
+    .topbar {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        grid-template-areas:
+            "menu search"
+            "actions actions";
+        align-items: center;
+        gap: 1rem;
+        padding-top: 1rem;
+    }
+
+    .searchContainer {
+        grid-area: search;
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+    }
+
+    .actions {
+        grid-area: actions;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 1.5rem;
+        background: white;
+        padding: 0.75rem;
+        border-radius: 16px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        margin-top: 0.5rem;
+        box-sizing: border-box;
+        /* Ensure padding doesn't overflow width */
+    }
+}
+
+@media (max-width: 480px) {
+    .actions {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    /* Hide Chat text on very small screens to save space */
+    .actions a span {
+        display: none;
+    }
+
+    .actions a {
+        padding: 0.5rem;
+        border-radius: 50%;
     }
 }
