@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
     try {
         const result = await db.query(`
         SELECT username, full_name, avatar_url FROM users 
-        WHERE (username LIKE $1 OR full_name LIKE $1) AND role = 'student'
+        WHERE (username ILIKE $1 OR full_name ILIKE $1)
         LIMIT 5
       `, [`%${q}%`]);
 

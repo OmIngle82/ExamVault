@@ -20,7 +20,7 @@ export async function POST(
 
     try {
         // 1. Check if user exists
-        const studentResult = await db.query('SELECT id FROM users WHERE username = $1 AND role = $2', [username, 'student']);
+        const studentResult = await db.query('SELECT id FROM users WHERE username ILIKE $1 AND role = $2', [username, 'student']);
         const student = studentResult.rows[0];
 
         if (!student) return NextResponse.json({ error: 'Student not found' }, { status: 404 });

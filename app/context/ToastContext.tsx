@@ -56,8 +56,8 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
                         boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
                         minWidth: '300px',
                         borderLeft: `4px solid ${toast.type === 'success' ? '#10B981' :
-                                toast.type === 'error' ? '#EF4444' :
-                                    toast.type === 'warning' ? '#F59E0B' : '#3B82F6'
+                            toast.type === 'error' ? '#EF4444' :
+                                toast.type === 'warning' ? '#F59E0B' : '#3B82F6'
                             }`,
                         animation: 'slideIn 0.3s ease-out forwards'
                     }}>
@@ -87,6 +87,10 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
 export function useToast() {
     const context = useContext(ToastContext);
     if (!context) {
+        // Prevent crash during SSR if context is missing for some reason
+        if (typeof window === 'undefined') {
+            return { addToast: () => { } };
+        }
         throw new Error('useToast must be used within a ToastProvider');
     }
     return context;

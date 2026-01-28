@@ -117,6 +117,22 @@ export default function TestForm({ test, questions, username, fullName, avatarUr
     }
   };
 
+  // Timer Effect
+  useEffect(() => {
+    if (!hasStarted || timeLeft === null || score !== null || isSubmitting) return;
+
+    if (timeLeft <= 0) {
+      submitTest();
+      return;
+    }
+
+    const timer = setInterval(() => {
+      setTimeLeft(prev => (prev !== null && prev > 0 ? prev - 1 : 0));
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [hasStarted, timeLeft, score, isSubmitting, submitTest]);
+
   const submitTest = useCallback(async (overrideViolationCount?: number) => {
     if (isSubmitting) return;
     setIsSubmitting(true);

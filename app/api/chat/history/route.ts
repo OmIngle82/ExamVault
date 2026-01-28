@@ -27,7 +27,7 @@ export async function GET(req: NextRequest) {
         }
 
         // Resolve other user ID
-        const otherUserResult = await db.query('SELECT id FROM users WHERE username = $1', [otherUser]);
+        const otherUserResult = await db.query('SELECT id FROM users WHERE username ILIKE $1', [otherUser]);
         const otherUserData = otherUserResult.rows[0];
 
         if (!otherUserData) {

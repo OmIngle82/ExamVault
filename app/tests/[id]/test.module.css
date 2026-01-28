@@ -11,31 +11,52 @@
 
 @media (max-width: 900px) {
   .layoutContainer {
-    grid-template-columns: 1fr;
-    display: block;
-    /* Remove grid to allow overlay */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    gap: 1.5rem;
   }
 
-  /* Overlay Sidebar */
+  /* Move Sidebar to Top */
   .sidebar {
-    position: fixed;
+    position: relative;
     top: 0;
-    right: 0;
-    height: 100vh;
-    width: 280px;
+    right: auto;
+    height: auto;
+    width: 100%;
+    max-width: 800px;
     background: white;
-    z-index: 100;
-    transform: translateX(100%);
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: -4px 0 15px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+    transform: none;
+    box-shadow: var(--card-shadow);
+    order: -1;
+    /* Places it at the top */
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1rem;
   }
 
   .sidebarOpen {
-    transform: translateX(0);
+    transform: none;
+  }
+
+  /* Adjust Timer for Mobile */
+  .timerBox {
+    font-size: 1.2rem;
+    padding: 0.5rem;
+  }
+
+  /* Make Palette scrollable if too big, or wrap nicely */
+  .questionPalette {
+    max-height: 150px;
+    overflow-y: auto;
   }
 
   .questionsList {
     width: 100%;
+    max-width: 800px;
   }
 
   .questionItem {
@@ -63,10 +84,9 @@
   font-size: 1.5rem;
 }
 
-@media (max-width: 900px) {
-  .mobileToggle {
-    display: flex;
-  }
+/* Mobile Toggle Button - HIDDEN as sidebar is now visible */
+.mobileToggle {
+  display: none !important;
 }
 
 /* Backdrop */

@@ -91,7 +91,7 @@ export default function ManageCommunityPage({ params }: { params: Promise<{ id: 
             return;
         }
 
-        const res = await fetch(`/api/users/search?q=${val}`);
+        const res = await fetch(`/api/users/search?q=${encodeURIComponent(val)}`);
         const data = await res.json();
         setSearchResults(data.users || []);
     };

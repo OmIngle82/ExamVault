@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
         }
 
         // Verify recipient exists
-        const recipientResult = await db.query('SELECT id FROM users WHERE username = $1', [to]);
+        const recipientResult = await db.query('SELECT id FROM users WHERE username ILIKE $1', [to]);
         const recipient = recipientResult.rows[0];
 
         if (!recipient) {

@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
     const { username, password, role } = zodResult.data;
 
     // Check if user exists
-    const existingCheck = await db.query('SELECT id FROM users WHERE username = $1', [username]);
+    const existingCheck = await db.query('SELECT id FROM users WHERE username ILIKE $1', [username]);
     if (existingCheck.rows.length > 0) {
       return NextResponse.json({ error: 'Username already taken' }, { status: 409 });
     }

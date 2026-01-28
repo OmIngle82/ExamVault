@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
             SELECT s.score, s.submitted_at, t.title
             FROM submissions s
             JOIN tests t ON s.test_id = t.id
-            WHERE s.student_username = $1
+            WHERE s.student_username ILIKE $1
             ORDER BY s.submitted_at ASC
         `;
 

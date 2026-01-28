@@ -60,7 +60,7 @@ export default function ChatClient({ currentUser }: ChatClientProps) {
         const delayDebounce = setTimeout(async () => {
             if (searchQuery.length > 0) {
                 try {
-                    const res = await fetch(`/api/users/search?q=${searchQuery}`);
+                    const res = await fetch(`/api/users/search?q=${encodeURIComponent(searchQuery)}`);
                     if (res.ok) {
                         const data = await res.json();
                         setSearchResults(data.users || []);
@@ -84,7 +84,7 @@ export default function ChatClient({ currentUser }: ChatClientProps) {
 
         const fetchMessages = async () => {
             try {
-                const url = `/api/chat/history?other_user=${selectedUser.username}`;
+                const url = `/api/chat/history?other_user=${encodeURIComponent(selectedUser.username)}`;
                 const res = await fetch(url);
                 if (res.ok && isMounted) {
                     const data = await res.json();
@@ -186,6 +186,12 @@ export default function ChatClient({ currentUser }: ChatClientProps) {
         setSelectedUser(user);
         setSearchQuery('');
         setSearchResults([]);
+
+        // Optimistically add to contacts so they don't disappear from the sidebar
+        setContacts(prev => {
+            if (prev.find(c => c.username === user.username)) return prev;
+            return [user, ...prev];
+        });
     };
 
     // Determine what list to show
